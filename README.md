@@ -1,6 +1,8 @@
 # AdjointAnalysis
 Create animations, plots, and calculate summary statistics for MITgcm adjoint output
 
+% NOTE: not yet ready for general use -- still in progress
+
 % steps
 
 1.) Download/place experiment data
