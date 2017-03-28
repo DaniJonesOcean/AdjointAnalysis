@@ -1,5 +1,2 @@
-masks/natl_mask   
-masks/not_natl_mask   
-masks/subpolar_natl_mask
-masks/not_subpolar_natl_mask
-masks/arctic_mask
+masks/scotia_mask
+masks/not_scotia_mask
