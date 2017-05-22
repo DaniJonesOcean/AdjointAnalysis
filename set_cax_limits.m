@@ -5,7 +5,8 @@ if strcmp(ad_name,'ADJptracer01')
   myCmap = cmpSeq;
   isSequential = 1;
 else
-  myCmap = cmp;
+%  myCmap = cmp;
+  myCmap = mylowbluehighred;
   isSequential = 0;
 end
 
@@ -27,4 +28,11 @@ else
   end
 
 end
+
+% in case of NaNs
+if max(isnan(myCax))==1
+  myCax(2) = 1.0;
+  myCax(1) = 0.0;
+end
+
 

@@ -29,6 +29,13 @@ switch ndim
     error('handle_adxx_files: ndims(adxx.1) must be 2 or 3')
 end
 
+% if masks exist, apply them
+if exist('masks','var') && length(masks)>0
+  disp('masks file found, will perform regional analysis')
+else
+  disp('no masks detected, only performing global analysis')
+end
+
 % create empty vectors to store various time series
 dJglobal.justSum.raw = zeros(maxrec,1);
 dJglobal.justSum.mean = zeros(maxrec,1);
@@ -44,22 +51,28 @@ cumulative_map_mean = cumulative_map_raw;
 cumulative_map_var = cumulative_map_mean;
 nmaps = 0;
 
-% load adjoint sensitivity fields, scale them
-for nrecord=1:maxrec
+% create vector for selecting/loading/plotting all records 
+recordVector = linspace(1,maxrec,maxrec);
 
-  % generic counter
-  ncount = nrecord;
+% select specific records to load/plot
+%recordVector = [53 183 313 391];
+
+% load adjoint sensitivity fields, scale them
+for nrecord=1:length(recordVector)
+
+  % generic counter 
+  ncount = recordVector(nrecord);
 
   % display progress
-  progress = 100.*nrecord/maxrec;
+  progress = 100.*recordVector(nrecord)/maxrec;
   disp(strcat('var=',ad_name,' prog=',sprintf('%3.2f',progress),' pct'))
 
   % number of days, date num
-  ndays(ncount) = 14*ncount;
+  ndays(ncount) = daysBetweenOutputs*ncount;
   date_num(ncount) = date0_num + ndays(ncount);
 
   % load adjoint sensitivity field
-  adxx = rdmds2gcmfaces(strcat(floc,ad_name),12,'rec',nrecord);
+  adxx = rdmds2gcmfaces(strcat(floc,ad_name),12,'rec',recordVector(nrecord));
 
   % various dJs, scaled and unscaled (global case, no masks)
   % use adxx, don't modify the original/raw adxx
@@ -67,7 +80,8 @@ for nrecord=1:maxrec
   geom_now = geom;
   calc_various_dJ_fields;
   calc_cumulative_maps;
-  make_a_plot;
+% make_a_plot;
+  make_rawsens_plot;
   dJglobal.justSum.raw(ncount) = dJraw_justSum_now;
   dJglobal.justSum.mean(ncount) = dJmean_justSum_now;
   dJglobal.justSum.var(ncount) = dJvar_justSum_now;
@@ -79,7 +93,6 @@ for nrecord=1:maxrec
   if exist('masks','var') && length(masks)>0
     apply_masks;
   else
-    disp('no masks detected, only performing global analysis')
     dJregional = [];
     masks = [];
   end

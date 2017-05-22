@@ -10,7 +10,7 @@
 
 %% Initial setup -----
 % set paths, load colormaps, load ECCOv4 grid
-%initial_setup
+initial_setup
 
 %% Generic stats -----
 % summary statistics dJmean and dJvar 

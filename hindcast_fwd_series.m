@@ -2,6 +2,8 @@
 % make hindcast of target quantity
 %
 
+% this code is currently disconnected from nearly everything else...
+
 % forward iterations
 load('/data/expose/ECCOv4_fwd/experiments/run.20yr.diags/its.txt');
 fwdfloc = '/data/expose/ECCOv4_fwd/experiments/run.20yr.diags/';

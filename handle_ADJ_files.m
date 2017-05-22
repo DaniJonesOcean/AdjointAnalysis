@@ -1,5 +1,8 @@
 % handle_ADJ_files
 % called by the main driver
+%
+% NOTE: assumes 1 hour timestep 
+%
 
 % load sigma (variable called Fsig)
 if doesSigmaExist
@@ -29,6 +32,14 @@ switch ndim
     error('handle_ADJ_files: ndims(ADJ.1) must be 2 or 3')
 end
 
+% report whether masks are being used or not
+if exist('masks','var') && length(masks)>0
+  disp('Masks file found, will generate regional stats') 
+else
+  disp('- No masks file found, global analysis only')
+end
+
+
 % create empty vectors to store various time series
 dJglobal.justSum.raw = zeros(maxrec,1);
 dJglobal.justSum.mean = zeros(maxrec,1);
@@ -55,7 +66,7 @@ for niter=1:length(its_ad)
   disp(strcat('var=',ad_name,' prog=',sprintf('%3.2f',progress),' pct'))
 
   % number of days, date num
-  ndays(ncount) = its_ad(niter)/24;
+  ndays(ncount) = its_ad(niter)/24;  % convert hours into days
   date_num(ncount) = date0_num + ndays(ncount);
 
   % load adjoint sensitivity field
@@ -68,6 +79,7 @@ for niter=1:length(its_ad)
   calc_various_dJ_fields;
   calc_cumulative_maps;
   make_a_plot;
+  make_rawsens_plot;
   dJglobal.justSum.raw(ncount) = dJraw_justSum_now;
   dJglobal.justSum.mean(ncount) = dJmean_justSum_now;
   dJglobal.justSum.var(ncount) = dJvar_justSum_now;
@@ -79,7 +91,6 @@ for niter=1:length(its_ad)
   if exist('masks','var') && length(masks)>0
     apply_masks;
   else
-    disp('no masks detected, only performing global analysis')
     dJregional = [];
     masks = [];
   end
@@ -98,9 +109,9 @@ monthconv;
 
 % save results
 disp(strcat('savings results for:',ad_name));
-save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
-                 'ad_name','sigma_name','masks','ndays',...
-                 'floc','ploc','dloc','sloc','gloc',...
-                 'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
-                 'date_num','dates','month');
+%save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
+%                 'ad_name','sigma_name','masks','ndays',...
+%                 'floc','ploc','dloc','sloc','gloc',...
+%                 'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
+%                 'date_num','dates','month');
 
