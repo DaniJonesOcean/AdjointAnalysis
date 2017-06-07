@@ -16,8 +16,17 @@ else
   warning('calc_various_dJ_fields: doesSigmaExist not set properly')
 end
 
-% for summing
-ff = dJfield.*geom_now;
+%  scale dJfield for summation
+%  (adxx/ADJ) = (length of ctrl period)/(length of one timestep)
+%  adxx is already scaled appropriately; gives total impact
+switch ad_name(1:3)
+  case 'adx'
+    ff = dJfield;   % adxx fields do not require spatiotemporal scaling
+  case 'ADJ'
+    ff = dJfield.*ADJ_time_scaling;  % temporal scaling only
+  otherwise
+    warning('Unexpected sensitivity field name')
+end
 
 % raw (no absolute value, just taken as-is)                          
 dJraw_justSum_now = squeeze(nansum(ff(:)));
@@ -28,13 +37,14 @@ dJmean_justSum_now = abs(squeeze(nansum(ff(:))));
 % spatially varying sensitivities (area/volume mean)
 dJvar_justSum_now = squeeze(nansum(abs(ff(:))));
 
+% --- get rid of spatial averages, just work with sums
+
 % raw (no absolute value, just taken as-is)                          
-dJraw_now = dJraw_justSum_now./squeeze(nansum(geom_now(:)));
+%dJraw_now = dJraw_justSum_now./squeeze(nansum(geom_now(:)));
 
 % mean (spatially uniform, basin scale) and spatially varying sens
-dJmean_now = dJmean_justSum_now./squeeze(nansum(geom_now(:)));
+%dJmean_now = dJmean_justSum_now./squeeze(nansum(geom_now(:)));
 
 % spatially varying sensitivities (area/volume mean)
-dJvar_now = dJvar_justSum_now./squeeze(nansum(geom_now(:)));
+%dJvar_now = dJvar_justSum_now./squeeze(nansum(geom_now(:)));
 
-% END

@@ -51,11 +51,14 @@ cumulative_map_mean = cumulative_map_raw;
 cumulative_map_var = cumulative_map_mean;
 nmaps = 0;
 
-% create vector for selecting/loading/plotting all records 
-recordVector = linspace(1,maxrec,maxrec);
-
-% select specific records to load/plot
-%recordVector = [53 183 313 391];
+% perform either short (a few records) or long analysis (all records)
+if doShortAnalysis==1
+  % select specific records to load/plot
+  recordVector = [53 183 313 391];
+else
+  % create vector for selecting/loading/plotting all records 
+  recordVector = linspace(1,maxrec,maxrec);
+end
 
 % load adjoint sensitivity fields, scale them
 for nrecord=1:length(recordVector)
@@ -70,6 +73,8 @@ for nrecord=1:length(recordVector)
   % number of days, date num
   ndays(ncount) = daysBetweenOutputs*ncount;
   date_num(ncount) = date0_num + ndays(ncount);
+  lag_in_days(ncount) = date_num(ncount) - date_lag0; 
+  lag_in_years(ncount) = lag_in_days(ncount)./365.25;  
 
   % load adjoint sensitivity field
   adxx = rdmds2gcmfaces(strcat(floc,ad_name),12,'rec',recordVector(nrecord));
@@ -78,16 +83,27 @@ for nrecord=1:length(recordVector)
   % use adxx, don't modify the original/raw adxx
   adxx_now = adxx;
   geom_now = geom;
+
+  % if selected, apply sea ice mask
+  if (applySeaIceMask==1) 
+    apply_seaice_mask;
+  end
+
+  % calc dJ fields and cumulative maps
   calc_various_dJ_fields;
   calc_cumulative_maps;
-% make_a_plot;
+
+  % make a plot either scaled by Fsig (regular) or not (rawsens)
+  make_a_plot;
   make_rawsens_plot;
+
+  % add entires to dJ statistics vectors
   dJglobal.justSum.raw(ncount) = dJraw_justSum_now;
   dJglobal.justSum.mean(ncount) = dJmean_justSum_now;
   dJglobal.justSum.var(ncount) = dJvar_justSum_now;
-  dJglobal.xavg.raw(ncount) = dJraw_now;
-  dJglobal.xavg.mean(ncount) = dJmean_now;
-  dJglobal.xavg.var(ncount) = dJvar_now;
+% dJglobal.xavg.raw(ncount) = dJraw_now;
+% dJglobal.xavg.mean(ncount) = dJmean_now;
+% dJglobal.xavg.var(ncount) = dJvar_now;
 
   % if masks exist, apply them
   if exist('masks','var') && length(masks)>0
@@ -110,10 +126,14 @@ month = dates(:,4:6);
 monthconv;
 
 % save results
-disp(strcat('savings results for:',ad_name));
-save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
-                 'ad_name','sigma_name','masks','ndays',...
-                 'floc','ploc','dloc','sloc','gloc',...
-                 'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
-                 'dates','date_num','month');
-
+if doShortAnalysis==1
+  disp(strcat('short analysis done for:',ad_name));
+  disp('results will *not* be saved');
+else
+  disp(strcat('savings results for:',ad_name));
+  save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
+                   'ad_name','sigma_name','masks','ndays',...
+                   'floc','ploc','dloc','sloc','gloc','nmaps',...
+                   'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
+                   'dates','date_num','month','lag_in_days','lag_in_years');
+end

@@ -1,2 +1,2 @@
-masks/scotia_mask
-masks/not_scotia_mask
+masks/petrel_ant_maskC
+masks/petrel_not_ant_maskC

@@ -20,14 +20,14 @@ switch ndim
     Fplot = adxx_now;
 
     % log10 magnitude (but keep signs)
-    Fplot.f1 = sign(Fplot.f1).*log10(abs(Fplot.f1));
-    Fplot.f2 = sign(Fplot.f2).*log10(abs(Fplot.f2));
-    Fplot.f3 = sign(Fplot.f3).*log10(abs(Fplot.f3));
-    Fplot.f4 = sign(Fplot.f4).*log10(abs(Fplot.f4));
-    Fplot.f5 = sign(Fplot.f5).*log10(abs(Fplot.f5));
+%   Fplot.f1 = sign(Fplot.f1).*log10(abs(Fplot.f1));
+%   Fplot.f2 = sign(Fplot.f2).*log10(abs(Fplot.f2));
+%   Fplot.f3 = sign(Fplot.f3).*log10(abs(Fplot.f3));
+%   Fplot.f4 = sign(Fplot.f4).*log10(abs(Fplot.f4));
+%   Fplot.f5 = sign(Fplot.f5).*log10(abs(Fplot.f5));
     
     % set color axis limits
-    set_cax_limits;
+    set_cax_raw_limits;
 
     % make plot
     m_map_gcmfaces(Fplot,myProj,{'myCmap',myCmap},{'myCaxis',myCax});
@@ -40,14 +40,14 @@ switch ndim
     Fplot = squeeze(nansum(adxx_now,3));
 
     % log10 magnitude (but keep signs)
-    Fplot.f1 = sign(Fplot.f1).*log10(abs(Fplot.f1));
-    Fplot.f2 = sign(Fplot.f2).*log10(abs(Fplot.f2));
-    Fplot.f3 = sign(Fplot.f3).*log10(abs(Fplot.f3));
-    Fplot.f4 = sign(Fplot.f4).*log10(abs(Fplot.f4));
-    Fplot.f5 = sign(Fplot.f5).*log10(abs(Fplot.f5));
+%   Fplot.f1 = sign(Fplot.f1).*log10(abs(Fplot.f1));
+%   Fplot.f2 = sign(Fplot.f2).*log10(abs(Fplot.f2));
+%   Fplot.f3 = sign(Fplot.f3).*log10(abs(Fplot.f3));
+%   Fplot.f4 = sign(Fplot.f4).*log10(abs(Fplot.f4));
+%   Fplot.f5 = sign(Fplot.f5).*log10(abs(Fplot.f5));
 
     % set color axis limits
-    set_cax_limits;
+    set_cax_raw_limits;
 
     % make plot
     m_map_gcmfaces(Fplot,myProj,{'myCmap',myCmap},{'myCaxis',myCax});
@@ -71,9 +71,20 @@ if ~isempty(boxlons)
 end
 
 % title and date
-title(strcat(strrep(ad_name,'_',' '),' :: ',...
-             sprintf('%8.2f',ndays(ncount)./365),' years'));
-m_text(0,-80,datestr(date_num(ncount),1))
+switch ad_name(1:3)
+  case 'adx'
+    ht=title(strcat(upper(ad_name(6:end)),' lag=',...
+                 sprintf('%6.1f',lag_in_years(ncount)),' years'));
+    m_text(0,48,datestr(date_num(ncount),1),'fontsize',16)
+  case 'ADJ'
+    ht=title(strcat(upper(ad_name(4:end)),' lag=',...
+                 sprintf('%6.1f',lag_in_years(ncount)),' years'));
+    m_text(0,48,datestr(date_num(ncount),1))
+end
+
+% title
+set(ht,'FontSize',18)
+set(gca,'FontSize',16)
 
 % get frame, set paper position
 orig_mode = get(gcf, 'PaperPositionMode');

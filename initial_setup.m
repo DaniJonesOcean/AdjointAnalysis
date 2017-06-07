@@ -30,13 +30,27 @@ cmpSeq = seq9_Blues./256;
 % alternative colormap - lowbluehighred
 load('~/colormaps/mylowbluehighred.mat')
 
-% maximum number of records
+% manually set maximum number of records
 maxrec = 523;
+%maxrec = 48;
 disp(strcat('Maximum number of records=',int2str(maxrec)))
 disp('Did you change nrecords=maxrec in adxx_*.meta as well?')
 
 % set number of days between snapshots/outputs (adxx or ADJ)
 daysBetweenOutputs = 14.0;
+%daysBetweenOutputs = 30.42;
+
+% short analysis (just a few selected records) or long (all records)
+doShortAnalysis = 0;
+
+% apply sea ice mask
+applySeaIceMask = 1;
+
+% vertical levels that you want to plot (select by index)
+zlevs = [1 10 23 28 37 42];
+
+% time scaling for ADJ fields
+ADJ_time_scaling = 1209600/3600;
 
 % starting date as a 'date number' (number of days since counter start)
 date0_num = datenum('1992-01-01 12:00:00');
@@ -44,12 +58,23 @@ disp(' ')
 disp(strcat('Initial date set to: ',datestr(date0_num)))
 disp(' ')
 
+% date that is considered "lag zero"
+%date_lag0 = datenum('1994-10-01 12:00:00');
+date_lag0 = datenum('2008-01-01 12:00:00');
+disp(' ')
+disp(strcat('Lag 0 date set to: ',datestr(date_lag0)))
+disp(' ')
+
 % flag for making animations (or not)
-goMakeAnimations = 0;
+if doShortAnalysis==1
+  goMakeAnimations = 0;
+else
+  goMakeAnimations = 1;
+end
 
 % for m_map_gcmfaces plotting
-myProj = 3.1; %- Southern Ocean
-%myProj=4.12; %- North Atlantic (between 30-85N)
+%myProj = 3.1; %- Southern Ocean
+myProj=4.12; %- North Atlantic (between 30-85N)
 %myProj=4.22; %- Test for Yavor 
 disp(' ')
 disp(strcat('Plotting projection set to=',sprintf('%04.2f',myProj)))
@@ -63,22 +88,24 @@ disp('Will draw box on plots/animations at boxlons/boxlats')
 %boxlats = [-55.0 -50.0 -50.0 -55.0 -55.0];
 
 % -- for central pacific patch
-boxlons = [-100 -90 -90 -100 -100];
-boxlats = [-48 -48 -52 -52 -48];
+%boxlons = [-100 -90 -90 -100 -100];
+%boxlats = [-48 -48 -52 -52 -48];
 
 % -- for eastern pacific patch
 %boxlons = [-85 -75 -75 -85 -85];
 %boxlats = [-52 -52 -55 -55 -52];
 
 % -- Labrador Sea
-%boxlons = [-55 -55 -49 -49 -55];
-%boxlats = [ 55  60  60  55  55];
+boxlons = [-55 -55 -49 -49 -55];
+boxlats = [ 55  60  60  55  55];
 
 % -- blank, when you don't want a box
 %boxlons = [];
 %boxlats = [];
 
-% set file locations -----------------
+% ----------------------------------------
+% --- set file locations -----------------
+% ----------------------------------------
 
 disp('-- Setting paths')
 
@@ -87,9 +114,16 @@ disp('-- Setting paths')
 % -- forward case 
 %rootdir = '/data/expose/ECCOv4_fwd/';
 %expdir = 'run.20yr.diags/';
+fwddir = 'run.20yr.diags/';
 
 % -- labrador sea
-%rootdir = '/data/expose/labrador/';
+rootdir = '/data/expose/labrador/';
+expdir = 'run_ad.20yr.labUpper.salt/';
+%expdir = 'run_ad.20yr.labUpper.heat/';
+%expdir = 'run_ad.20yr.labMiddle.heat/';
+%expdir = 'run_ad.20yr.labMiddle.salt/';
+%expdir = 'run_ad.20yr.labDeep.heat/';
+%expdir = 'run_ad.20yr.labDeep.salt/';
 %expdir = 'run_ad.20yr.ulsw.ptr/';
 %expdir = 'run_ad.20yr.dlsw.ptr/';
 %expdir = 'run_ad.20yr.ulsw.heat/';
@@ -106,13 +140,24 @@ disp('-- Setting paths')
 %expdir = 'run_ad.20yr.scotia/';
 
 % -- expose
-rootdir = '/data/expose/expose_global/';
-expdir = 'run_ad.20yr.cpac.salt/';
+%rootdir = '/data/expose/expose_global/';
+%expdir = 'run_ad.20yr.cpac.salt/';
 %expdir = 'run_ad.20yr.epac.salt/';
+
+% -- ICED
+%rootdir = '/data/expose/iced/';
+%expdir = 'run_ad.5yr.petrel.ant/';
+%expdir = 'run_ad.5yr.petrel.ker/';
 
 % -- test for yavor
 %rootdir = '/data/expose/acsis/';
 %expdir = 'yavor/';
+
+%% ---------------------------------------------------------------------
+%% ---- You probably won't have to change anything below this line -----
+%% ---------------------------------------------------------------------
+
+%% set locations based on experiment selection ---------------
 
 % grid location
 gloc = strcat(rootdir,'grid/');
@@ -281,7 +326,7 @@ if exist(filename,'file')
   [A,delimiterOut]=importdata(filename);
   B=regexp(A,delimiterOut,'split');
 else
-  error('initial_setup: adj_list.txt file not found \n')
+  error('initial_setup: adj_list.txt file not found')
 end
 
 % load fixed caxes, if they exist
@@ -293,6 +338,17 @@ if exist(filename,'file')
 else
   cax_fixed = 0;
   warning('No adj_cax.txt file found, caxis not fixed')
+end
+
+% load fixed caxes, if they exist
+filename = strcat(floc,'adj_cax_raw.txt');
+if exist(filename,'file')
+  cax_raw_fixed = 1;
+  [Craw,delimiterOut]=importdata(filename);
+  disp('adj_cax_raw.txt file found, caxis limits will be fixed/constant')
+else
+  cax_raw_fixed = 0;
+  warning('No adj_cax_raw.txt file found, caxis not fixed')
 end
 
 

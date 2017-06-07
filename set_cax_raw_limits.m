@@ -1,4 +1,4 @@
-% set caxis limits and color map
+% set caxis limits and color map (raw : for 'raw' sensitivity fields)
 
 % if ADJptracer, use sequential. Otherwise use diverging.
 if strcmp(ad_name,'ADJptracer01')
@@ -12,13 +12,11 @@ else
   isSequential = 0;
 end
 
-% If caxis is fixed and plot is either sum or surface, used specified values. 
-% nzlev==0 corresponds to either a column sum plot or just a surface plot
-% Otherwise, calculate it.
-if (cax_fixed)&&(nzlev==0)
+% if caxis is fixed, used that. Otherwise, calculate it
+if cax_raw_fixed
 
-  myCax(1) = C(nvariable,1);
-  myCax(2) = C(nvariable,2);
+  myCax(1) = Craw(nvariable,1);
+  myCax(2) = Craw(nvariable,2);
 
 else
 

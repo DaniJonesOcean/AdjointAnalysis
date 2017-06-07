@@ -28,7 +28,7 @@ for nvariable=1:length(B)
     disp('-- No stdev file selected/found')
   end
 
-  % create video object for animation
+  % if selected, create video object for animation
   if goMakeAnimations==1
     vidObj = VideoWriter(strcat(aloc,ad_name));
     open(vidObj);
