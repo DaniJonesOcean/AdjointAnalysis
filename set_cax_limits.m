@@ -2,13 +2,13 @@
 
 % if ADJptracer, use sequential. Otherwise use diverging.
 if strcmp(ad_name,'ADJptracer01')
-% myCmap = cmpSeq;
-  myCmap = mylowbluehighred(1:128,:);
+  myCmap = cmpSeq;
+% myCmap = mylowbluehighred(1:128,:);
   myCmap = flipud(myCmap);
   isSequential = 1;
 else
-%  myCmap = cmp;
-  myCmap = mylowbluehighred;
+  myCmap = cmp;
+% myCmap = mylowbluehighred;
   isSequential = 0;
 end
 
@@ -24,10 +24,10 @@ else
 
   % use different scale depending on sequential/diverging
   if isSequential
-    myCax(2) = max(Fplot(:));
+    myCax(2) = caxScale.*max(Fplot(:));
     myCax(1) = 0.0;
   else
-    myCax(2) = max(max(Fplot(:)),abs(min(Fplot(:))));
+    myCax(2) = caxScale.*max(max(Fplot(:)),abs(min(Fplot(:))));
     myCax(1) = -1.0*myCax(2);
   end
 

@@ -9,6 +9,10 @@
 % default figure is hf1
 %figure(hf1);
 
+% set path to dJ
+plocNow = ploc;
+zplocNow = zploc;
+
 % handle 2D and 3D cases
 switch ndim
 
@@ -21,8 +25,18 @@ switch ndim
     % set color axis limits
     set_cax_limits;
 
-    % make plot
-    m_map_gcmfaces(Fplot,myProj,{'myCmap',myCmap},{'myCaxis',myCax});
+    % make the plot
+    m_map_gcmfaces(Fplot,myProj,...
+                  {'myCmap',myCmap},...
+                  {'myCaxis',myCax},...
+                  {'doHold',1});
+
+    % add contour showing region of interest
+    if ~isempty(myMaskToPlot)
+      m_map_gcmfaces({'contour',myMaskC,'k'},4.1,{'doHold',1});
+    end
+
+    % format axes and labels, print as selected
     format_and_print;
 
   case 3
@@ -37,14 +51,24 @@ switch ndim
     set_cax_limits;
 
     % make plot
-    m_map_gcmfaces(Fplot,myProj,{'myCmap',myCmap},{'myCaxis',myCax});
+    m_map_gcmfaces(Fplot,myProj,...
+                  {'myCmap',myCmap},...
+                  {'myCaxis',myCax},...
+                  {'doHold',1});
+
+    % add contour showing region of interest
+    if ~isempty(myMaskToPlot)
+      m_map_gcmfaces({'contour',myMaskC,'k'},4.1,{'doHold',1});
+    end
+
+    % format axes and labels, print as selected
     format_and_print;
 
     % plot selected vertical levels
     for nzlev = 1:length(zlevs)
 
       % vertical level progress
-      disp(strcat('--plotting vertical level=',int2str(nzlev)))
+      disp(strcat('---------- plotting vertical level=',int2str(nzlev)))
 
       % select the level
       Fplot = squeeze(dJfield(:,:,zlevs(nzlev)));
@@ -53,7 +77,17 @@ switch ndim
       set_cax_limits;
  
       % make the plot
-      m_map_gcmfaces(Fplot,myProj,{'myCmap',myCmap},{'myCaxis',myCax});
+      m_map_gcmfaces(Fplot,myProj,...
+                    {'myCmap',myCmap},...
+                    {'myCaxis',myCax},...
+                    {'doHold',1});
+ 
+      % add contour showing region of interest
+      if ~isempty(myMaskToPlot)
+        m_map_gcmfaces({'contour',myMaskC,'k'},4.1,{'doHold',1});
+      end
+ 
+      % format axes and labels, print as selected
       format_and_print;
 
     end

@@ -7,10 +7,13 @@
 % load sigma (variable called Fsig)
 if doesSigmaExist
   load(strcat(sloc,sigma_name,'.mat'))
-  disp(strcat('loading sigma: ',sigma_name))
+  disp(strcat('-------- loading sigma: ',sigma_name))
 else
-  disp('-- Not loading sigma (not selected/found)')
+  disp('-------- not loading sigma (not selected/found)')
 end
+
+% d8
+d8 = '-------- ';
 
 % read sample file to get dimensions
 sample = rdmds2gcmfaces(strcat(floc,ad_name),its_ad(1));
@@ -18,7 +21,7 @@ ndim = ndims(sample.f1);
 
 % error check - Fsig must have same dimensions as sample
 if (doesSigmaExist) && (ndims(Fsig.f1)~=ndim)
-  error('handle_ADJ_files: ndims(Fsig.f1) must equal ndims(ADJ.f1)')
+  error('-------- handle_ADJ_files: ndims(Fsig.f1) must equal ndims(ADJ.f1)')
 end
 
 % get geometric factor, depending on geometry
@@ -29,14 +32,18 @@ switch ndim
   case 3
     geom = DVC;
   otherwise
-    error('handle_ADJ_files: ndims(ADJ.1) must be 2 or 3')
+    error('-------- handle_ADJ_files: ndims(ADJ.1) must be 2 or 3')
 end
 
 % report whether masks are being used or not
 if exist('masks','var') && length(masks)>0
-  disp('Masks file found, will generate regional stats') 
+  disp(d8)
+  disp('-------- masks file found, will generate regional stats') 
+  disp(d8)
 else
-  disp('- No masks file found, global analysis only')
+  disp(d8)
+  disp('-------- no masks file found, global analysis only')
+  disp(d8)
 end
 
 
@@ -44,9 +51,9 @@ end
 dJglobal.justSum.raw = zeros(maxrec,1);
 dJglobal.justSum.mean = zeros(maxrec,1);
 dJglobal.justSum.var = zeros(maxrec,1);
-dJglobal.xavg.raw = zeros(maxrec,1);
-dJglobal.xavg.mean = zeros(maxrec,1);
-dJglobal.xavg.var = zeros(maxrec,1);
+%dJglobal.xavg.raw = zeros(maxrec,1);
+%dJglobal.xavg.mean = zeros(maxrec,1);
+%dJglobal.xavg.var = zeros(maxrec,1);
 
 % cumulative maps
 cumulative_map_raw = sample;
@@ -58,7 +65,7 @@ nmaps = 0;
 % perform either short (a few records) or long analysis (all records)
 if doShortAnalysis==1
   % select specific records to load/plot
-  recordVector = [its_ad(53) its_ad(183) its_ad(313) its_ad(391)];
+  recordVector = its_ad(myPlotRecs);
 else
   % create vector for selecting/loading/plotting all records 
   recordVector = its_ad;
@@ -72,7 +79,8 @@ for nrecord=1:length(recordVector)
 
   % display progress
   progress = 100.*nrecord/length(recordVector);
-  disp(strcat('var=',ad_name,' prog=',sprintf('%3.2f',progress),' pct'))
+  disp(strcat(d8,' variable=',ad_name,' progress=',...
+              sprintf('%3.2f',progress),' pct'))
 
   % number of days, date num
   ndays(ncount) = recordVector(nrecord)/24;  % convert hours into days
@@ -97,8 +105,19 @@ for nrecord=1:length(recordVector)
   calc_cumulative_maps;
 
   % create plots
-  make_a_plot;
-% make_rawsens_plot;
+  switch makePlots 
+    case 'dJ'
+      make_a_plot;
+    case 'rawsens'
+      make_rawsens_plot;
+    case 'none'
+      continue;
+    case 'both'
+      make_a_plot;
+      make_rawsens_plot;
+    otherwise 
+      warning('------ makePlots flag not set properly, check initial_setup.m')
+  end
 
   % various DJ sums
   dJglobal.justSum.raw(ncount) = dJraw_justSum_now;
@@ -129,9 +148,11 @@ month = dates(:,4:6);
 monthconv;
 
 % save results
-disp(strcat('savings results for:',ad_name));
+disp(d8)
+disp(strcat(d8,' saving results for:',ad_name));
 save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
                  'ad_name','sigma_name','masks','ndays',...
                  'floc','ploc','dloc','sloc','gloc','nmaps',...
                  'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
                  'date_num','dates','month','lag_in_days','lag_in_years');
+disp(d8)

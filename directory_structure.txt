@@ -1,0 +1,33 @@
+%
+% Assumed directory structure
+%
+
+-rootdir (set by user in initial_setup.m)
+---grid (contains model grid info)
+---stdev_anoms (.mat files for scaling)
+---experiments (input for analysis program)**
+-----experiment 1
+-----experiment 2
+-----  ...
+-----experiment N
+---plots (output from analysis program)
+-----experiment 1*
+-----experiment 2*
+----- ...
+-----experiment N*
+---data_out (.mat output from analysis program)
+-----experiment 1*
+-----experiment 2*
+----- ...
+-----experiment N*
+---animations (output from analysis program)
+-----experiment 1*
+-----experiment 2*
+----- ...
+-----experiment N*
+
+
+* = if folder does not exist, program will create it
+** = must contain its_ad.txt and adj_list.txt
+** = if desired, also its.txt, adj_cax.txt, and adj_cax_raw.txt
+

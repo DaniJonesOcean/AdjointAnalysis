@@ -6,7 +6,7 @@ A = squeeze(month(i,:));
 
     if (A(1)=='J' & A(2)=='a' & A(3)=='n')
 	month_num(i) = 1;
-        season_num(i) = 1
+        season_num(i) = 1;
     elseif (A(1)=='F' & A(2)=='e' & A(3)=='b')
 	month_num(i) = 2;
         season_num(i) = 1;

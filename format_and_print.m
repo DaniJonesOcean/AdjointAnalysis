@@ -31,7 +31,7 @@ end
 
 % title
 set(ht,'FontSize',16)
-set(gca,'FontSize',14)
+set(gca,'FontSize',16)
 
 % get frame, set paper position
 orig_mode = get(gcf, 'PaperPositionMode');
@@ -46,12 +46,37 @@ if (goMakeAnimations==1)&&(nzlev==0)
   writeVideo(vidObj,currFrame);
 end
 
-% print as jpg for now
+% print
 if nzlev==0
-  print('-djpeg90',strcat(ploc,ad_name,'_',sprintf('%05d',ncount),'.jpg'));
+  switch plotFormat
+    case 'eps'
+%     print('-depsc2',strcat(plocNow,ad_name,'_',...
+%                     sprintf('%05d',ncount),'.eps'));
+      saveas(gcf,strcat(plocNow,ad_name,'_',...
+                 sprintf('%05d',ncount),'.eps'),'epsc2')
+    case 'jpg'
+%     print('-djpeg90',strcat(plocNow,ad_name,'_',...
+%                      sprintf('%05d',ncount),'.jpg'));
+      saveas(gcf,strcat(plocNow,ad_name,'_',...
+                 sprintf('%05d',ncount),'.jpg'),'jpg')
+    otherwise
+      warning('plotFormat not set correctly, skipping print step')
+  end
 elseif nzlev>0
-  print('-djpeg90',strcat(ploc,ad_name,'_',sprintf('%05d',ncount),...
-                          '_z',sprintf('%02d',zlevs(nzlev)),'.jpg'));
+  switch plotFormat
+    case 'eps'
+%     print('-depsc2',strcat(zplocNow,ad_name,'_',sprintf('%05d',ncount),...
+%                        '_z',sprintf('%02d',zlevs(nzlev)),'.eps'));
+      saveas(gcf,strcat(zplocNow,ad_name,'_',sprintf('%05d',ncount),...
+                        '_z',sprintf('%02d',zlevs(nzlev)),'.eps'),'epsc2');
+    case 'jpg'
+%     print('-djpeg90',strcat(zplocNow,ad_name,'_',sprintf('%05d',ncount),...
+%                       '_z',sprintf('%02d',zlevs(nzlev)),'.jpg'));
+      saveas(gcf,strcat(zplocNow,ad_name,'_',sprintf('%05d',ncount),...
+                        '_z',sprintf('%02d',zlevs(nzlev)),'.jpg'),'jpg');
+    otherwise
+      warning('plotFormat not set correctly, skipping print step')
+  end
 else
   warning('nzlev not set, plot not printed')
 end

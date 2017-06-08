@@ -24,4 +24,6 @@
 6.) Change the paths in "initial_setup" to reflect the location of the 
     experiment, stdevs, and where you want the plots/data to go afterwards.
 
+***** See the document directory_structure.txt to see assumed structure *****
+
 7.) Run "main" to get the analysis going.

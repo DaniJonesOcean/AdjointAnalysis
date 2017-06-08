@@ -5,7 +5,9 @@
 %
 
 % display
+disp('--')
 disp('-- Entering generic_stats.m')
+disp('--')
 
 % for each adxx/ADJ and sigma pair, load in data
 for nvariable=1:length(B)
@@ -25,7 +27,9 @@ for nvariable=1:length(B)
     doesSigmaExist = 1;
   else
     doesSigmaExist = 0;
-    disp('-- No stdev file selected/found')
+    disp('----')
+    disp('---- no stdev file selected/found')
+    disp('----')
   end
 
   % if selected, create video object for animation
@@ -33,19 +37,25 @@ for nvariable=1:length(B)
     vidObj = VideoWriter(strcat(aloc,ad_name));
     open(vidObj);
   else
-    disp('note :: no animations will be created')
+    disp('----')
+    disp('---- note :: no animations will be created')
+    disp('----')
   end
 
   % load adj and sensitivity field
   switch ad_name(1:3)
     case 'adx'
-      disp('file type: adxx')
+      disp('----')
+      disp('---- file type: adxx')
+      disp('----')
       handle_adxx_files
     case 'ADJ'
-      disp('file type: ADJ')
+      disp('----')
+      disp('---- file type: ADJ')
+      disp('----')
       handle_ADJ_files 
     otherwise
-      warning('Unexpected adjoint sensitivity field name')
+      warning('---- unexpected adjoint sensitivity field name')
   end
 
   % close video object

@@ -4,9 +4,11 @@
 % load sigma (variable called Fsig)
 if doesSigmaExist
   load(strcat(sloc,sigma_name,'.mat'))
-  disp(strcat('loading sigma: ',sigma_name))
+  disp(strcat('------ loading sigma: ',sigma_name))
 else
-  disp('-- Not loading sigma (not selected/found)')
+  disp('------')
+  disp('------ not loading sigma (not selected/found)')
+  disp('------')
 end
 
 % read sample file to get dimensions
@@ -15,7 +17,7 @@ ndim = ndims(sample.f1);
 
 % error check - Fsig must have same dimensions as sample
 if doesSigmaExist && (ndims(Fsig.f1)~=ndim)
-  error('handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
+  error('------ handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
 end
 
 % get geometric factor, depending on geometry
@@ -26,23 +28,29 @@ switch ndim
   case 3
     geom = DVC;
   otherwise
-    error('handle_adxx_files: ndims(adxx.1) must be 2 or 3')
+    disp('------')
+    error('------ handle_adxx_files: ndims(adxx.1) must be 2 or 3')
+    disp('------')
 end
 
 % if masks exist, apply them
 if exist('masks','var') && length(masks)>0
-  disp('masks file found, will perform regional analysis')
+  disp('------')
+  disp('------ masks file found, will perform regional analysis')
+  disp('------')
 else
-  disp('no masks detected, only performing global analysis')
+  disp('------')
+  disp('------ no masks detected, only performing global analysis')
+  disp('------')
 end
 
 % create empty vectors to store various time series
 dJglobal.justSum.raw = zeros(maxrec,1);
 dJglobal.justSum.mean = zeros(maxrec,1);
 dJglobal.justSum.var = zeros(maxrec,1);
-dJglobal.xavg.raw = zeros(maxrec,1);
-dJglobal.xavg.mean = zeros(maxrec,1);
-dJglobal.xavg.var = zeros(maxrec,1);
+%dJglobal.xavg.raw = zeros(maxrec,1);
+%dJglobal.xavg.mean = zeros(maxrec,1);
+%dJglobal.xavg.var = zeros(maxrec,1);
 
 % cumulative maps
 cumulative_map_raw = sample;
@@ -54,11 +62,14 @@ nmaps = 0;
 % perform either short (a few records) or long analysis (all records)
 if doShortAnalysis==1
   % select specific records to load/plot
-  recordVector = [53 183 313 391];
+  recordVector = myPlotRecs;
 else
   % create vector for selecting/loading/plotting all records 
   recordVector = linspace(1,maxrec,maxrec);
 end
+
+% dash
+d8 = '-------- ';
 
 % load adjoint sensitivity fields, scale them
 for nrecord=1:length(recordVector)
@@ -68,7 +79,8 @@ for nrecord=1:length(recordVector)
 
   % display progress
   progress = 100.*recordVector(nrecord)/maxrec;
-  disp(strcat('var=',ad_name,' prog=',sprintf('%3.2f',progress),' pct'))
+  disp(strcat(d8,' variable=',ad_name,' progress=',...
+              sprintf('%3.2f',progress),' pct'))
 
   % number of days, date num
   ndays(ncount) = daysBetweenOutputs*ncount;
@@ -93,9 +105,20 @@ for nrecord=1:length(recordVector)
   calc_various_dJ_fields;
   calc_cumulative_maps;
 
-  % make a plot either scaled by Fsig (regular) or not (rawsens)
-  make_a_plot;
-  make_rawsens_plot;
+  % create plots (or not)
+  switch makePlots
+    case 'dJ'
+      make_a_plot;
+    case 'rawsens'
+      make_rawsens_plot;
+    case 'both'
+      make_a_plot;
+      make_rawsens_plot;
+    case 'none'
+      continue;
+    otherwise
+      warning('-------- makePlots flag not set properly, check initial_setup.m')
+  end
 
   % add entires to dJ statistics vectors
   dJglobal.justSum.raw(ncount) = dJraw_justSum_now;
@@ -127,13 +150,17 @@ monthconv;
 
 % save results
 if doShortAnalysis==1
-  disp(strcat('short analysis done for:',ad_name));
-  disp('results will *not* be saved');
+  disp(d8)
+  disp(strcat(d8,' short analysis done for:',ad_name));
+  disp(strcat(d8,' results will *not* be saved'));
+  disp(d8)
 else
-  disp(strcat('savings results for:',ad_name));
+  disp(d8)
+  disp(strcat(d8,' savings results for:',ad_name));
   save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
                    'ad_name','sigma_name','masks','ndays',...
                    'floc','ploc','dloc','sloc','gloc','nmaps',...
                    'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
                    'dates','date_num','month','lag_in_days','lag_in_years');
+  disp(d8)
 end
