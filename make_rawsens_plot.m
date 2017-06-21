@@ -8,12 +8,12 @@
 % to be added:
 % - for 3D fields, also plot a zonal mean (or maybe a cut) 
 
+%
+% -- depreciated - probably not needed anymore. Can probs delete file.
+%
+
 % default figure is hf1
 %figure(hf1);
-
-% save these files in 'raw' directory
-plocNow = plocRaw;
-zplocNow = zplocRaw;
 
 % handle 2D and 3D cases
 switch ndim
@@ -25,7 +25,7 @@ switch ndim
     nzlev = 0;
 
     % set color axis limits
-    set_cax_raw_limits;
+    set_cax_limits;
 
     % make plot
     m_map_gcmfaces(Fplot,myProj,...
@@ -50,7 +50,7 @@ switch ndim
     nzlev = 0;
 
     % set color axis limits
-    set_cax_raw_limits;
+    set_cax_limits;
 
     % make plot
     m_map_gcmfaces(Fplot,myProj,...

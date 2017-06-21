@@ -7,11 +7,16 @@
 % - The dJraw, dJmean, and dJvar series are area/volume averaged
 % - 'justSum' is the numerator of area/volume average
 
+% debugging message 
+if debugMode==1
+  disp('----------- calc_various_dJ_fields')
+end
+
 % if sigma exists, apply it. Otherwise, don't
 if doesSigmaExist==1
   dJfield = adxx_now.*Fsig;
 elseif doesSigmaExist==0
-  dJfield = adxx_now;
+  dJfield = adxx_now;  % can be interpreted as perturbations of 1 unit 
 else
   warning('calc_various_dJ_fields: doesSigmaExist not set properly')
 end

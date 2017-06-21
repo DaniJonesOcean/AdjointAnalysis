@@ -4,12 +4,18 @@
 % NOTE: assumes 1 hour timestep 
 %
 
+% MAY NOT BE NEEDED ANYMORE: using case statements, absorbed this into adxx_files....
+%
+%
+
 % load sigma (variable called Fsig)
 if doesSigmaExist
   load(strcat(sloc,sigma_name,'.mat'))
   disp(strcat('-------- loading sigma: ',sigma_name))
 else
+  disp('------')
   disp('-------- not loading sigma (not selected/found)')
+  disp('------')
 end
 
 % d8
@@ -46,7 +52,6 @@ else
   disp(d8)
 end
 
-
 % create empty vectors to store various time series
 dJglobal.justSum.raw = zeros(maxrec,1);
 dJglobal.justSum.mean = zeros(maxrec,1);
@@ -74,8 +79,8 @@ end
 % load ADJ files
 for nrecord=1:length(recordVector)
 
-  % generic counter
-  ncount = nrecord;
+  % generic counter (no longer needed)
+% ncount = nrecord;
 
   % display progress
   progress = 100.*nrecord/length(recordVector);
@@ -83,10 +88,10 @@ for nrecord=1:length(recordVector)
               sprintf('%3.2f',progress),' pct'))
 
   % number of days, date num
-  ndays(ncount) = recordVector(nrecord)/24;  % convert hours into days
-  date_num(ncount) = date0_num + ndays(ncount);
-  lag_in_days(ncount) = date_num(ncount) - date_lag0;
-  lag_in_years(ncount) = lag_in_days(ncount)./365.25;
+  ndays(nrecord) = recordVector(nrecord)/24;  % convert hours into days
+  date_num(nrecord) = date0_num + ndays(nrecord);
+  lag_in_days(nrecord) = date_num(nrecord) - date_lag0;
+  lag_in_years(nrecord) = lag_in_days(nrecord)./365.25;
 
   % load adjoint sensitivity field
   adxx = rdmds2gcmfaces(strcat(floc,ad_name),recordVector(nrecord));
@@ -100,23 +105,26 @@ for nrecord=1:length(recordVector)
     apply_seaice_mask;
   end
 
+  % get mixed layer depth (produces mld_now) 
+  get_mixlayerdepth;
+
   % calculate various DJ fields and cumulative maps
   calc_various_dJ_fields;
   calc_cumulative_maps;
 
-  % create plots
-  switch makePlots 
+  % create plots (or not)
+  switch makePlots
     case 'dJ'
-      make_a_plot;
+      isRaw = 0; make_a_plot;
     case 'rawsens'
-      make_rawsens_plot;
-    case 'none'
-      continue;
+      isRaw = 1; make_a_plot;
     case 'both'
-      make_a_plot;
-      make_rawsens_plot;
-    otherwise 
-      warning('------ makePlots flag not set properly, check initial_setup.m')
+      isRaw = 0; make_a_plot;
+      isRaw = 1; make_a_plot;
+    case 'none'
+      quirk = [];
+    otherwise
+      warning('-------- makePlots flag not set properly, check initial_setup.m')
   end
 
   % various DJ sums
@@ -126,6 +134,11 @@ for nrecord=1:length(recordVector)
 % dJglobal.xavg.raw(ncount) = dJraw_now;
 % dJglobal.xavg.mean(ncount) = dJmean_now;
 % dJglobal.xavg.var(ncount) = dJvar_now;
+
+  % display for progress
+  if debugMode==1
+    disp(strcat('-------------- dJglobal.mean=',sprintf('%0.5g',dJglobal.justSum.mean(ncount))))
+  end
 
   % if masks exist, apply them
   if exist('masks','var') && length(masks)>0

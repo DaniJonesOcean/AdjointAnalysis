@@ -1,23 +1,37 @@
-% handle_adxx_files - script to read in adxx adjoint fields
+% handle_adxx_files - script to read in adxx (or ADJ) adjoint fields
 % run by the main driver, which is called 'generic_stats.m'
+
+% --- update: can now handle both adxx and ADJ files
 
 % load sigma (variable called Fsig)
 if doesSigmaExist
   load(strcat(sloc,sigma_name,'.mat'))
-  disp(strcat('------ loading sigma: ',sigma_name))
+  disp(strcat('-------- loading sigma: ',sigma_name))
 else
-  disp('------')
-  disp('------ not loading sigma (not selected/found)')
-  disp('------')
+  disp('--------')
+  disp('-------- not loading sigma (not selected/found)')
+  disp('--------')
 end
 
+% d8 (just some dashes)
+d8 = '-------- ';
+
 % read sample file to get dimensions
-sample = rdmds2gcmfaces(strcat(floc,ad_name),12,'rec',1);
+switch ad_file_type
+  case 'adxx'
+    sample = rdmds2gcmfaces(strcat(floc,ad_name),ad_iter,'rec',1);
+  case 'ADJ'
+    sample = rdmds2gcmfaces(strcat(floc,ad_name),its_ad(1));
+  otherwise
+    error('ad_file_type not recognized')
+end
+
+% get number of dimensions from sample
 ndim = ndims(sample.f1);
 
 % error check - Fsig must have same dimensions as sample
-if doesSigmaExist && (ndims(Fsig.f1)~=ndim)
-  error('------ handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
+if (doesSigmaExist) && (ndims(Fsig.f1)~=ndim)
+  error('-------- handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
 end
 
 % get geometric factor, depending on geometry
@@ -35,13 +49,13 @@ end
 
 % if masks exist, apply them
 if exist('masks','var') && length(masks)>0
-  disp('------')
-  disp('------ masks file found, will perform regional analysis')
-  disp('------')
+  disp(d8)
+  disp('-------- masks file found, will perform regional analysis')
+  disp(d8)
 else
-  disp('------')
-  disp('------ no masks detected, only performing global analysis')
-  disp('------')
+  disp(d8)
+  disp('-------- no masks detected, only performing global analysis')
+  disp(d8)
 end
 
 % create empty vectors to store various time series
@@ -61,11 +75,25 @@ nmaps = 0;
 
 % perform either short (a few records) or long analysis (all records)
 if doShortAnalysis==1
-  % select specific records to load/plot
-  recordVector = myPlotRecs;
+  switch ad_file_type
+    case 'adxx'  
+      % select specific records to load/plot
+      recordVector = myPlotRecs;
+    case 'ADJ'
+      recordVector = its_ad(myPlotRecs);
+    otherwise
+      error('ad_file_type not recognized')
+    end
 else
-  % create vector for selecting/loading/plotting all records 
-  recordVector = linspace(1,maxrec,maxrec);
+  switch ad_file_type
+    case 'adxx'
+      % create vector for selecting/loading/plotting all records 
+      recordVector = linspace(1,maxrec,maxrec);
+    case 'ADJ'
+      recordVector = its_ad;
+    otherwise
+      error('ad_file_type not recnogized')
+    end
 end
 
 % dash
@@ -74,22 +102,51 @@ d8 = '-------- ';
 % load adjoint sensitivity fields, scale them
 for nrecord=1:length(recordVector)
 
-  % generic counter 
-  ncount = recordVector(nrecord);
+  % date handling and reading in differs for ADJ and adxx files
+  switch ad_file_type
 
-  % display progress
-  progress = 100.*recordVector(nrecord)/maxrec;
-  disp(strcat(d8,' variable=',ad_name,' progress=',...
-              sprintf('%3.2f',progress),' pct'))
+    case 'adxx'
 
-  % number of days, date num
-  ndays(ncount) = daysBetweenOutputs*ncount;
-  date_num(ncount) = date0_num + ndays(ncount);
-  lag_in_days(ncount) = date_num(ncount) - date_lag0; 
-  lag_in_years(ncount) = lag_in_days(ncount)./365.25;  
+      % progress counter
+      ncount = recordVector(nrecord);
+      progress = 100.*ncount/maxrec;
 
-  % load adjoint sensitivity field
-  adxx = rdmds2gcmfaces(strcat(floc,ad_name),12,'rec',recordVector(nrecord));
+      % number of days, date num
+      ndays(nrecord) = daysBetweenOutputs*ncount;
+
+      % load adjoint sensitivity field
+      adxx = rdmds2gcmfaces(strcat(floc,ad_name),ad_iter,'rec',recordVector(nrecord));
+
+    case 'ADJ'
+
+      % progress counter
+      ncount = nrecord;   % THIS  MIGHT NOT BE RIGHT
+      progress = 100.*nrecord/length(recordVector);
+
+      % number of days, date num
+      ndays(nrecord) = recordVector(nrecord)/24;  % convert hours into days
+
+      % load adjoint sensitivity field
+      adxx = rdmds2gcmfaces(strcat(floc,ad_name),recordVector(nrecord));
+
+    otherwise
+
+      error('ad_file_type not set correctly')
+
+  end
+
+  % date handling
+  date_num(nrecord) = date0_num + ndays(nrecord);
+  lag_in_days(nrecord) = date_num(nrecord) - date_lag0;
+  lag_in_years(nrecord) = lag_in_days(nrecord)./365.25;
+
+  % debugging
+  if debugMode==1
+    disp(strcat(d8,'ndays=',int2str(ndays(nrecord))))
+  end
+
+  % print progress to screen
+  disp(strcat(d8,' variable=',ad_name,' progress=',sprintf('%3.2f',progress),' pct'))
 
   % various dJs, scaled and unscaled (global case, no masks)
   % use adxx, don't modify the original/raw adxx
@@ -101,6 +158,9 @@ for nrecord=1:length(recordVector)
     apply_seaice_mask;
   end
 
+  % get mixed layer depth (produces mld_now)
+  get_mixlayerdepth;
+
   % calc dJ fields and cumulative maps
   calc_various_dJ_fields;
   calc_cumulative_maps;
@@ -108,14 +168,14 @@ for nrecord=1:length(recordVector)
   % create plots (or not)
   switch makePlots
     case 'dJ'
-      make_a_plot;
+      isRaw = 0; make_a_plot;
     case 'rawsens'
-      make_rawsens_plot;
+      isRaw = 1; make_a_plot;
     case 'both'
-      make_a_plot;
-      make_rawsens_plot;
+      isRaw = 0; make_a_plot;
+      isRaw = 1; make_a_plot;
     case 'none'
-      continue;
+      curious = [];
     otherwise
       warning('-------- makePlots flag not set properly, check initial_setup.m')
   end

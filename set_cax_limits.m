@@ -2,23 +2,52 @@
 
 % if ADJptracer, use sequential. Otherwise use diverging.
 if strcmp(ad_name,'ADJptracer01')
-  myCmap = cmpSeq;
-% myCmap = mylowbluehighred(1:128,:);
-  myCmap = flipud(myCmap);
+  switch whichColorBar
+    case 'nl'
+      myCmap = mylowbluehighred(1:128,:);
+    case 'cb2'
+      myCmap = cmpSeq;
+    otherwise
+      myCmap = mylowbluehighred(1:128,:);
+  end
+  %myCmap = flipud(myCmap);
   isSequential = 1;
 else
-  myCmap = cmp;
-% myCmap = mylowbluehighred;
+  switch whichColorBar
+    case 'nl'
+      myCmap = mylowbluehighred;
+    case 'cb2'
+      myCmap = cmp;
+    otherwise
+      myCmap = mylowbluehighred;
+  end
   isSequential = 0;
+end
+
+% raw or not?
+if nzlev==0
+  if isRaw==1
+    Cnow=myColorAxesRaw(ad_name);
+  else
+    Cnow=myColorAxes(ad_name);
+  end
+elseif nzlev>0
+  if isRaw==1
+    Cnow=myColorAxesRawZlev(ad_name);
+  else
+    Cnow=myColorAxesZlev(ad_name);
+  end
+else
+  error('nzlev not set correctly')
 end
 
 % If caxis is fixed and plot is either sum or surface, used specified values. 
 % nzlev==0 corresponds to either a column sum plot or just a surface plot
 % Otherwise, calculate it.
-if (cax_fixed)&&(nzlev==0)
+if cax_fixed
 
-  myCax(1) = C(nvariable,1);
-  myCax(2) = C(nvariable,2);
+  myCax(1) = Cnow(1);
+  myCax(2) = Cnow(2);
 
 else
 
