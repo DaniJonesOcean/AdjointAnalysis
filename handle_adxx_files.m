@@ -1,7 +1,7 @@
 % handle_adxx_files - script to read in adxx (or ADJ) adjoint fields
 % run by the main driver, which is called 'generic_stats.m'
 
-% --- update: can now handle both adxx and ADJ files
+% --- update: can now handle both adxx and ADJ files (so the name is misleading)
 
 % load sigma (variable called Fsig)
 if useSingleFsigValue

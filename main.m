@@ -18,13 +18,13 @@ addpath /users/dannes/matlabfiles/m_map/
 addpath /users/dannes/gcmfaces/
 
 % color maps (diverging, sequential, and alternate)
-load('~/colormaps/div11_RdYlBu.txt')
+load('div11_RdYlBu.txt')
 cmp = div11_RdYlBu./256;
 cmp = flipud(cmp);
 cmp(6,:) = [1.0 1.0 1.0];
-load('~/colormaps/seq9_Blues.txt')  
+load('seq9_Blues.txt')  
 cmpSeq = seq9_Blues./256;
-load('~/colormaps/mylowbluehighred.mat')  % alternative colormap
+load('mylowbluehighred.mat')  % alternative colormap
 
 % physical and geometric parameters
 d2rad = pi/180;         % Earth's rotation rate (1/s) 

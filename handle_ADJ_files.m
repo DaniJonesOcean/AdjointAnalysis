@@ -4,6 +4,8 @@
 % NOTE: assumes 1 hour timestep 
 %
 
+% THIS FILE IS NOT USED ANYMORE (handle_adxx_files can now handle both adxx and ADJ)
+
 % MAY NOT BE NEEDED ANYMORE: using case statements, absorbed this into adxx_files....
 %
 %
