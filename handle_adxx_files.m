@@ -4,13 +4,18 @@
 % --- update: can now handle both adxx and ADJ files
 
 % load sigma (variable called Fsig)
-if doesSigmaExist
-  load(strcat(sloc,sigma_name,'.mat'))
-  disp(strcat('-------- loading sigma: ',sigma_name))
-else
-  disp('--------')
-  disp('-------- not loading sigma (not selected/found)')
-  disp('--------')
+if useSingleFsigValue
+  disp('-------- loading zero-dimensional sigma')
+  Fsig = FSigSingle(sigma_name);
+else 
+  if doesSigmaExist
+    load(strcat(sloc,sigma_name,'.mat'))
+    disp(strcat('-------- loading sigma: ',sigma_name))
+  else
+    disp('--------')
+    disp('-------- not loading sigma (not selected/found)')
+    disp('--------')
+  end
 end
 
 % d8 (just some dashes)
@@ -30,8 +35,10 @@ end
 ndim = ndims(sample.f1);
 
 % error check - Fsig must have same dimensions as sample
-if (doesSigmaExist) && (ndims(Fsig.f1)~=ndim)
-  error('-------- handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
+if (useSingleFsigValue==0)
+  if (doesSigmaExist) && (ndims(Fsig.f1)~=ndim)
+    error('-------- handle_adxx_files: ndims(Fsig.f1) must equal ndims(adxx.f1)')
+  end
 end
 
 % get geometric factor, depending on geometry
@@ -117,6 +124,9 @@ for nrecord=1:length(recordVector)
       % load adjoint sensitivity field
       adxx = rdmds2gcmfaces(strcat(floc,ad_name),ad_iter,'rec',recordVector(nrecord));
 
+      % scale by mult_gencost
+      adxx = adxx./mult_gencost;
+
     case 'ADJ'
 
       % progress counter
@@ -128,6 +138,9 @@ for nrecord=1:length(recordVector)
 
       % load adjoint sensitivity field
       adxx = rdmds2gcmfaces(strcat(floc,ad_name),recordVector(nrecord));
+
+      % scale by mult_gencost
+      adxx = adxx./mult_gencost;
 
     otherwise
 
@@ -218,7 +231,7 @@ else
   disp(d8)
   disp(strcat(d8,' savings results for:',ad_name));
   save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
-                   'ad_name','sigma_name','masks','ndays',...
+                   'ad_name','sigma_name','masks','ndays','FSigSingle',...
                    'floc','ploc','dloc','sloc','gloc','nmaps',...
                    'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
                    'dates','date_num','month','lag_in_days','lag_in_years');

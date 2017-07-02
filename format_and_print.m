@@ -20,7 +20,7 @@ switch ad_name(1:3)
     end
     ht=title(strcat(t1,', lag=',...
                  sprintf('%6.1f',lag_in_years(nrecord)),' years'));
-    m_text(0,48,datestr(date_num(nrecord),1),'fontsize',16)
+    m_text(65,65,datestr(date_num(nrecord),1),'fontsize',16)
   case 'ADJ'
     if isRaw==1
       t1=niceTitleRaw(upper(ad_name(4:end)));
@@ -30,12 +30,12 @@ switch ad_name(1:3)
     if nzlev==0
       ht=title(strcat(t1,', lag=',...
                       sprintf('%6.1f',lag_in_years(ncount)),' years'));
-      m_text(0,48,datestr(date_num(ncount),1),'fontsize',16)
+      m_text(65,65,datestr(date_num(ncount),1),'fontsize',16)
     elseif nzlev>0
       ht=title(strcat(t1,', lag=',...
                       sprintf('%6.1f',lag_in_years(ncount)),' years, ',...
                       'z=',sprintf('%4.0f',mygrid.RC(zlevs(nzlev))),' m'));
-      m_text(0,48,datestr(date_num(ncount),1),'fontsize',16)
+      m_text(65,65,datestr(date_num(ncount),1),'fontsize',16)
     end
 end
 

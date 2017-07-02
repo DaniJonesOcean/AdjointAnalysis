@@ -17,7 +17,7 @@ for nmask=1:length(masks)
   if ndims(mask.f1)<ndim
  
    %warning('apply_masks.m: ndims(mask)~=ndim, skipping mask')
-   warning('ndims(mask)<ndim, making some assumptions here (check)')
+   %warning('ndims(mask)<ndim, making some assumptions here (check)')
    %dJregional = [];
 
    % expand mask  

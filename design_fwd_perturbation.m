@@ -1,6 +1,7 @@
 %
 % design forward perturbation experiment using adxx files
 %
+% -- perturbations based on sensitivity fields
 
 %% initial setup
 
@@ -65,6 +66,7 @@ date0_num = datenum('1992-01-01 12:00:00');
 date_lag0 = datenum('2008-01-01 12:00:00');
 date_num = date0_num + ndays;
 dates = datestr(date_num);
+time_in_years = ndays./365.25;
 lag_in_days = date_num - date_lag0;
 lag_in_years = lag_in_days./365.25;
 
