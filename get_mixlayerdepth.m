@@ -11,7 +11,7 @@
 if nrecord<=length(its_ad)
 
   % name for rdmds2gcmfaces call
-  mld_location = strcat(rootdir,'experiments/',fwddir,'diag_2D_set1');
+  mld_location = strcat(fwdroot,'experiments/',fwddir,'diag_2D_set1');
 
   % load sea ice area
   mld_now = rdmds2gcmfaces(mld_location,its_ad(nrecord),'rec',1);
