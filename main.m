@@ -24,6 +24,7 @@ cmp = flipud(cmp);
 cmp(6,:) = [1.0 1.0 1.0];
 load('seq9_Blues.txt')  
 cmpSeq = seq9_Blues./256;
+%cmpSeq = flipud(cmpSeq);
 load('mylowbluehighred.mat')  % alternative colormap
 
 % physical and geometric parameters
@@ -43,6 +44,7 @@ ad_iter = 12;
 
 % manually set maximum number of records
 maxrec = 523;
+%maxrec = 28;
 
 % theta, salt, or ptr?
 myField = 'theta';
@@ -53,10 +55,11 @@ daysBetweenOutputs = 14.0;
 %daysBetweenOutputs = 30.42;
 
 % short analysis (1=just a few selected records) or long (0=all records)
-doShortAnalysis = 1;
+doShortAnalysis = 0;
 
 % gencost multiplier (check data.ecco to see what was used)
 mult_gencost = 1.0e9;    % used for 2008 SO MXL heat content
+%mult_gencost = 1.0e3;
 %mult_gencost = 1.0;
 
 % use single value for Fsig (as opposed to a spatially-varying std. dev.
@@ -69,6 +72,7 @@ keySet = {'THETA',...
           'EXFqnet',...
           'EXFtaue',...
           'EXFtaun',...
+          'PTRACER01',...
           'NONE'};
 valueSet = {0.3,...
             0.07,...
@@ -76,6 +80,7 @@ valueSet = {0.3,...
             60.0,...
             0.08,...
             0.06,...
+            1.0,...
             1.0};
 FSigSingle = containers.Map(keySet,valueSet);
 
@@ -90,10 +95,12 @@ ADJ_time_scaling = 1209600/3600;
 date0_num = datenum('1992-01-01 12:00:00');
 
 % date that is considered "lag zero"
-%date_lag0 = datenum('1994-10-01 12:00:00');
-date_lag0 = datenum('2008-01-01 12:00:00');
+%date_lag0 = datenum('1994-10-01 12:00:00');  % -- Petrel
+date_lag0 = datenum('2008-01-01 12:00:00'); % -- Labrador Sea
 
 % list of adjoint sensitivity variables to load and process
+%myAdjList = {'ADJptracer01'};
+%mySigmaList = {'NONE'};
 myAdjList =   {'adxx_empmr',...
               'adxx_qnet',...
               'adxx_tauu',...
@@ -173,8 +180,13 @@ rootdir = '/data/expose/orchestra/';
 %expdir = 'run_ad.20yr.labDeep.heat/';
 %expdir = 'run_ad.20yr.labDeep.ptr/';
 
+% petrel case
+%rootdir = '/data/expose/iced/';
+
 % use this for multiple experiments (all same units)
 myExpList = {'run_ad.20yr.SOmixlayer/'};
+%myExpList = {'run_ad.1yr.SOmixlayer/'};
+%myExpList = {'run_ad.5yr.petrel.ker/'};
 
 % make sure directory names end with a '/' character
 % switch myField
@@ -210,11 +222,13 @@ makePlots = 'none';
 % select mask to plot as contour
 % -- set as empty [] for no contour
 %myMaskToPlot = 'masks/lab_upper_maskC';
+%myMaskToPlot = 'masks/petrel_ker_maskC';
+%myMaskToPlot = 'masks/in_ker';
 myMaskToPlot = [];
 
 % flag for testing/exploration mode or production mode
-myPlotMode = 'testing';
-%myPlotMode = 'production';
+%myPlotMode = 'testing';
+myPlotMode = 'production';
 
 switch myPlotMode
   case 'testing'
@@ -253,7 +267,7 @@ valueSet = {strcat('\d J / \d \theta [degC/degC]')...
             'dJ/d(E-p-r) [degC/(m/s)]',...
             'dJ/d(zonal wind stress) [degC/(N/m^2)]',...
             'dJ/d(merid. wind stress) [degC/(N/m^2)]',...
-            'dJ/d(tracer) [degC/ptr]'};
+            'Tracer sensitivity '};
 %valueSet = {'dJ/dT [degrees C/degrees C]',...
 %            'dJ/dS [degrees C/psu]',...                  
 %            'dJ/dQ [degrees C/(W/m^2)]',...
@@ -264,22 +278,23 @@ valueSet = {strcat('\d J / \d \theta [degC/degC]')...
 niceTitleRaw = containers.Map(keySet,valueSet);
 
 % use fixed colorbar axes (specified below, flag=1), or not (=0, default)
-cax_fixed = 1;
+cax_fixed = 0;
 
 % set to either plot MLD contours (=1) or not (=0, default)
-plotMLD = 1;
+plotMLD = 0;
 
 % record numbers that you want to plot (select by index)
-myPlotRecs = [53 183 313 391];  
+%myPlotRecs = [53 183 313 391];  
+%myPlotRecs = [1 13 26];  
 
 % vertical levels that you want to plot (select by index)
 plotZLEVS = 0;   % if =0, will only plot surface (no depths levels)
-zlevs = [1 10 23 28 37 42];
+zlevs = [1 5 11 18 20 24];
 
 % for m_map_gcmfaces plotting
 %myProj = 0; %- all three
-myProj = 1; %- Mercator only
-%myProj = 3.1; %- Southern Ocean
+%myProj = 1; %- Mercator only
+myProj = 3.1; %- Southern Ocean
 %myProj=4.12; %- North Atlantic (between 30-85N)
 %myProj=4.22; %- Test for Yavor 
 
