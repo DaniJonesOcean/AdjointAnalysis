@@ -33,6 +33,7 @@ rho_0 = 1.027e3;        % Reference density (kg/m^3)
 omega = 7.272e-5;       % Earth's rotation rate (1/s)
 Cp = 4022.0;            % Heat capacity (J/kg K) 
 g = 9.81;               % Gravitational acceleration (m/s^2)
+a = 6.371e6;            % Radius of Earth (m)
 
 % load user inputs
 inputs
