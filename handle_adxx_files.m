@@ -172,7 +172,9 @@ for nrecord=1:length(recordVector)
   end
 
   % get mixed layer depth (produces mld_now)
-  get_mixlayerdepth;
+  if (plotMLD==1)
+    get_mixlayerdepth;
+  end
 
   % calc dJ fields and cumulative maps
   calc_various_dJ_fields;

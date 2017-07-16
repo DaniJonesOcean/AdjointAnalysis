@@ -13,7 +13,7 @@ for nmask=1:length(masks)
 % mask = convert2gcmfaces(fld);   % had to do this previously...
   mask = fld;                  
 
-  % check dimensions (if not the same, skip it)
+  % check dimensions
   if ndims(mask.f1)<ndim
  
    %warning('apply_masks.m: ndims(mask)~=ndim, skipping mask')

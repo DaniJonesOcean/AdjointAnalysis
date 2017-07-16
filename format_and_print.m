@@ -20,7 +20,7 @@ switch ad_name(1:3)
     end
     ht=title(strcat(t1,', lag=',...
                  sprintf('%6.1f',lag_in_years(nrecord)),' years'));
-    m_text(65,65,datestr(date_num(nrecord),1),'fontsize',16)
+    m_text(65,65,datestr(date_num(nrecord),1),'fontsize',12)
   case 'ADJ'
     if isRaw==1
       t1=niceTitleRaw(upper(ad_name(4:end)));
@@ -30,18 +30,18 @@ switch ad_name(1:3)
     if nzlev==0
       ht=title(strcat(t1,', lag=',...
                       sprintf('%6.1f',lag_in_years(ncount)),' years'));
-      m_text(65,65,datestr(date_num(ncount),1),'fontsize',16)
+      m_text(65,65,datestr(date_num(ncount),1),'fontsize',12)
     elseif nzlev>0
       ht=title(strcat(t1,', lag=',...
                       sprintf('%6.1f',lag_in_years(ncount)),' years, ',...
                       'z=',sprintf('%4.0f',mygrid.RC(zlevs(nzlev))),' m'));
-      m_text(65,65,datestr(date_num(ncount),1),'fontsize',16)
+      m_text(65,65,datestr(date_num(ncount),1),'fontsize',12)
     end
 end
 
 % title
-set(ht,'FontSize',16)
-set(gca,'FontSize',16)
+set(ht,'FontSize',12)
+set(gca,'FontSize',12)
 
 % if goMakeAnimations flag is set, then grab frame for animation
 % must be column sum or a surface plot (i.e. nzlev==0)
@@ -55,8 +55,8 @@ if (goMakeAnimations==1)&&(nzlev==0)
 end
 
 % title
-set(ht,'FontSize',16)
-set(gca,'FontSize',16)
+set(ht,'FontSize',12)
+set(gca,'FontSize',12)
 
 % print
 if nzlev==0
