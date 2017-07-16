@@ -6,10 +6,10 @@
 initial_setup
 
 %% path for velocity data
-uvloc = strcat(rootdir,'experiments/',fwddir,'diag_3D_set1');
+uvloc = strcat(fwdroot,'experiments/',fwddir,'diag_3D_set1');
 
 %% get iterations for 2008
-load(strcat(rootdir,'experiments/',fwddir,'its2008.txt'));
+load(strcat(fwdroot,'experiments/',fwddir,'its2008.txt'));
 
 %% load uvel, vvel
 uvel = rdmds2gcmfaces(uvloc,its2008','rec',1);
@@ -26,6 +26,6 @@ psi = calc_barostream(ubar,vbar);
 m_map_gcmfaces(psi,4.1)
 
 %% save
-save(strcat(rootdir,'experiments/',fwddir,'baro2008.mat'),...
+save(strcat(fwdroot,'experiments/',fwddir,'baro2008.mat'),...
      'psi','its2008')
 

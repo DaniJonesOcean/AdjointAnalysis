@@ -12,7 +12,7 @@
 if nrecord<=length(its_ad)
 
   % name for rdmds2gcmfaces call
-  ficeloc = strcat(rootdir,'experiments/',fwddir,'diag_2D_seaice1');
+  ficeloc = strcat(fwdroot,'experiments/',fwddir,'diag_2D_seaice1');
 
   % load sea ice area
   SIarea = rdmds2gcmfaces(ficeloc,its_ad(nrecord),'rec',1);

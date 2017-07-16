@@ -13,7 +13,7 @@ clear memory
 close all 
 
 % add paths (--IF NEW USER, CHANGE THESE TO YOUR PATHS--)
-addpath /users/dannes/matlabfiles/
+%addpath /users/dannes/matlabfiles/
 addpath /users/dannes/matlabfiles/m_map/
 addpath /users/dannes/gcmfaces/
 
@@ -33,6 +33,19 @@ rho_0 = 1.027e3;        % Reference density (kg/m^3)
 omega = 7.272e-5;       % Earth's rotation rate (1/s)
 Cp = 4022.0;            % Heat capacity (J/kg K) 
 g = 9.81;               % Gravitational acceleration (m/s^2)
+
+% load user inputs
+inputs
+
+if strcmp(makePlots,'none') && doShortAnalysis == 1
+    display 'WARNING no outputs will be created'
+    yn = input('Type 1 to continue: ');
+    if yn~=1
+        return
+    end
+end
+
+% some text for the standard output
 
 %% Flags and parameters for analysis -----------------------------------
 
@@ -302,6 +315,7 @@ myProj = 3.1; %- Southern Ocean
 goMakeAnimations = 0;
 
 % some text for the stanard output
+
 disp('--')
 disp('-----------------------------------------------------------------')
 disp('------ Sensitivity analysis - summary stats and plots -----------')
@@ -345,27 +359,6 @@ switch myField
         error('myField option not recognised')
 end
 
-% -- select points for boxes to be put on plots
-
-% -- for scotia sea      
-%boxlons = [-53.5 -53.5 -49.5 -49.5 -53.5];
-%boxlats = [-55.0 -50.0 -50.0 -55.0 -55.0];
-
-% -- for central pacific patch
-%boxlons = [-100 -90 -90 -100 -100];
-%boxlats = [-48 -48 -52 -52 -48];
-
-% -- for eastern pacific patch
-%boxlons = [-85 -75 -75 -85 -85];
-%boxlats = [-52 -52 -55 -55 -52];
-
-% -- labrador sea
-%boxlons = [-55 -55 -49 -49 -55];
-%boxlats = [ 55  60  60  55  55];
-
-% -- blank, when you don't want a box
-boxlons = [];
-boxlats = [];
 
 %% Sets paths, creates directories if needed, calls generic_stats
 
@@ -483,13 +476,15 @@ for nExp=1:length(myExpList)
 
     % stdev location
     %sloc = strcat(rootdir,'stdevs_wseasons/');
-    sloc = strcat(rootdir,'stdevs_anoms/');
-    if exist(sloc,'dir')
-      disp('--')
-      disp(strcat('-- standard deviations location: ',sloc))
-      disp('--')
-    else
-      error('-- std. dev. directory not found, check variable: sloc.')
+    if ~useSingleFsigValue
+        sloc = strcat(rootdir,'stdevs_anoms/');
+        if exist(sloc,'dir')
+            disp('--')
+            disp(strcat('-- standard deviations location: ',sloc))
+            disp('--')
+        else
+            error('-- std. dev. directory not found, check variable: sloc.')
+        end
     end
 
     % load gcmfaces grid
