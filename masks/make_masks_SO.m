@@ -1,6 +1,8 @@
 %
 % make some masks
 %
+addpath /users/dannes/matlabfiles/m_map/
+addpath /users/dannes/gcmfaces/
 
 %initial_setup
 clear all
