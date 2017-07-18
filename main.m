@@ -1,6 +1,6 @@
 %
 % adjoint analysis driver for use with ECCOv4 and gcmfaces
-% --- D. Jones (dannes@bas.ac.uk), June 2017 
+% --- D. Jones (dannes@bas.ac.uk) and E. Boland (emmomp@bas.ac.uk), July 2017 
 %
 % >>>> assumes a certain directory structure (see directory_structure.txt)
 %
@@ -33,6 +33,7 @@ rho_0 = 1.027e3;        % Reference density (kg/m^3)
 omega = 7.272e-5;       % Earth's rotation rate (1/s)
 Cp = 4022.0;            % Heat capacity (J/kg K) 
 g = 9.81;               % Gravitational acceleration (m/s^2)
+a = 6.371e6;            % Radius of Earth (m)
 
 % load user inputs
 inputs
@@ -45,7 +46,7 @@ if strcmp(makePlots,'none') && doShortAnalysis == 1
     end
 end
 
-% some text for the stanard output
+% some text for the standard output
 
 disp('--')
 disp('-----------------------------------------------------------------')
