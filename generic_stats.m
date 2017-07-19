@@ -29,6 +29,9 @@ for nvariable=1:length(myAdjList)
 
   % if Fsig exists, set appropriate flags
   % Fsig is loaded in handle_adxx or handle_ADJ
+  if useSingleFsigValue
+      doesSigmaExist=0
+  else      
   sfilename = strcat(sloc,sigma_name,'.mat');
   if exist(sfilename,'file')
     %load(sfilename);
@@ -36,7 +39,8 @@ for nvariable=1:length(myAdjList)
   else
     doesSigmaExist = 0;
   end
-
+  end
+  
   % if selected, create video object for animation
   if goMakeAnimations==1
     vidObj = VideoWriter(strcat(aloc,ad_name));

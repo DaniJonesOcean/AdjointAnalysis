@@ -173,7 +173,13 @@ for nrecord=1:length(recordVector)
 
   % get mixed layer depth (produces mld_now)
   if (plotMLD==1)
-    get_mixlayerdepth;
+      if recordVector(nrecord) <= length(its_ad)
+          mld_now = get_mixlayerdepth(its_ad(recordVector(nrecord)),fwdroot,fwddir);
+      else
+          warning('---------- get_mixlayerdepth.m :: recordVector(nrecord)>length(its_ad)')
+          warning('---------- mixed layer not loaded here')
+          mld_now = [];
+      end
   end
 
   % calc dJ fields and cumulative maps

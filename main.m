@@ -46,6 +46,8 @@ if strcmp(makePlots,'none') && doShortAnalysis == 1
     end
 end
 
+% some text for the standard output
+
 disp('--')
 disp('-----------------------------------------------------------------')
 disp('------ Sensitivity analysis - summary stats and plots -----------')
@@ -260,9 +262,10 @@ for nExp=1:length(myExpList)
     DVC = DVC.*(mygrid.hFacC);
     total_volume = squeeze(nansum(DVC(:)));
 
+    fwdloc = strcat(fwdroot,'experiments/',fwddir);
     % if 'its.txt' file exists (list of iteration numbers), load it
-    if exist(strcat(floc,'its.txt'), 'file')
-      load(strcat(floc,'its.txt'));
+    if exist(strcat(fwdloc,'its.txt'), 'file')
+      load(strcat(fwdloc,'its.txt'));
     else
       disp('--')
       disp('-- initial_setup: no its.txt file detected')

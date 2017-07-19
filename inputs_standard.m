@@ -198,7 +198,7 @@ plotMLD = 1;
 
 % record numbers that you want to plot (select by index)
 %myPlotRecs = [53 183 313 391];  
-myPlotRecs = [1 14 26 28];  
+myPlotRecs = [1 13 26];  
 
 % vertical levels that you want to plot (select by index)
 plotZLEVS = 0;   % if =0, will only plot surface (no depths levels)

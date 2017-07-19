@@ -9,13 +9,13 @@
 %
 
 % load sea ice concentration
-if nrecord<=length(its_ad)
+if recordVector(nrecord)<=length(its_ad)
 
   % name for rdmds2gcmfaces call
   ficeloc = strcat(fwdroot,'experiments/',fwddir,'diag_2D_seaice1');
 
   % load sea ice area
-  SIarea = rdmds2gcmfaces(ficeloc,its_ad(nrecord),'rec',1);
+  SIarea = rdmds2gcmfaces(ficeloc,its_ad(recordVector(nrecord)),'rec',1);
                      
   % apply sea ice mask
   switch ndim
