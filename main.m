@@ -38,7 +38,7 @@ a = 6.371e6;            % Radius of Earth (m)
 % load user inputs
 inputs
 
-if strcmp(makePlots,'none') && doShortAnalysis == 1
+if strcmp(makePlots,'none') && goMakeAnimations == 0
     display 'WARNING no outputs will be created'
     yn = input('Type 1 to continue: ');
     if yn~=1
@@ -217,6 +217,8 @@ for nExp=1:length(myExpList)
         else
             error('-- std. dev. directory not found, check variable: sloc.')
         end
+    else
+        sloc = [];
     end
 
     % load gcmfaces grid
