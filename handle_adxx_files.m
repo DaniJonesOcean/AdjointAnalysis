@@ -47,7 +47,8 @@ switch ndim
   case 2
     geom = DAC;
   case 3
-    geom = DVC;
+%   geom = DVC;
+    geom = 1./DRF3D;
   otherwise
     disp('------')
     error('------ handle_adxx_files: ndims(adxx.1) must be 2 or 3')
@@ -72,6 +73,12 @@ dJglobal.justSum.var = zeros(maxrec,1);
 %dJglobal.xavg.raw = zeros(maxrec,1);
 %dJglobal.xavg.mean = zeros(maxrec,1);
 %dJglobal.xavg.var = zeros(maxrec,1);
+
+% amplitude weighted time
+ampWeightedTime_numerator = mygrid.hFacC;
+ampWeightedTime_numerator(ampWeightedTime_numerator<Inf)=0.0;
+ampWeightedTime_denominator = mygrid.hFacC;
+ampWeightedTime_denominator(ampWeightedTime_denominator<Inf)=0.0;
 
 % cumulative maps
 cumulative_map_raw = sample;
@@ -124,8 +131,8 @@ for nrecord=1:length(recordVector)
       % load adjoint sensitivity field
       adxx = rdmds2gcmfaces(strcat(floc,ad_name),ad_iter,'rec',recordVector(nrecord));
 
-      % scale by mult_gencost
-      adxx = adxx./mult_gencost;
+      % scale by scalar_gencost
+      adxx = adxx./scale_gencost;
 
     case 'ADJ'
 
@@ -139,8 +146,8 @@ for nrecord=1:length(recordVector)
       % load adjoint sensitivity field
       adxx = rdmds2gcmfaces(strcat(floc,ad_name),recordVector(nrecord));
 
-      % scale by mult_gencost
-      adxx = adxx./mult_gencost;
+      % scale by scale_gencost
+      adxx = adxx./scale_gencost;
 
     otherwise
 
@@ -209,6 +216,10 @@ for nrecord=1:length(recordVector)
 % dJglobal.xavg.mean(ncount) = dJmean_now;
 % dJglobal.xavg.var(ncount) = dJvar_now;
 
+  % amplitude weighted mean time
+  ampWeightedTime_numerator = ampWeightedTime_numerator + ampWeightedTime_num_now.*daysBetweenOutputs;
+  ampWeightedTime_denominator = ampWeightedTime_denominator + ampWeightedTime_den_now.*daysBetweenOutputs;
+
   % if masks exist, apply them
   if exist('masks','var') && length(masks)>0
     apply_masks;
@@ -224,6 +235,9 @@ cumulative_map_raw = cumulative_map_raw./nmaps;
 cumulative_map_var = cumulative_map_var./nmaps;
 cumulative_map_mean = abs(cumulative_map_raw);
 
+% amplitude weighted time
+amplitudeWeightedTime = ampWeightedTime_numerator./ampWeightedTime_denominator;
+
 % date handling
 dates = datestr(date_num);
 month = dates(:,4:6);
@@ -238,9 +252,9 @@ if doShortAnalysis==1
 else
   disp(d8)
   disp(strcat(d8,' savings results for:',ad_name));
-  save(strcat(dloc,'genstats_',ad_name,'.mat'),'dJglobal','dJregional',...
+  save(strcat(dloc,'genstats_',ad_name,nametag,'.mat'),'dJglobal','dJregional',...
                    'ad_name','sigma_name','masks','ndays','FSigSingle',...
-                   'floc','ploc','dloc','sloc','gloc','nmaps',...
+                   'floc','ploc','dloc','sloc','gloc','nmaps','amplitudeWeightedTime',...
                    'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
                    'dates','date_num','month','lag_in_days','lag_in_years');
   disp(d8)

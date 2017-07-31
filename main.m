@@ -61,7 +61,7 @@ disp('--')
 disp(strcat('-- Initial date set to: ',datestr(date0_num)))
 disp('--')
 disp('--')
-disp(strcat('-- Lag 0 date set to: ',datestr(date_lag0)))
+%disp(strcat('-- Lag 0 date set to: ',datestr(date_lag0)))
 disp('--')
 disp('--')
 disp(strcat('-- Plotting projection set to=',sprintf('%04.2f',myProj)))
@@ -80,15 +80,17 @@ else
 end
 
 % use map containers to specify colorbar axis limits
-switch myField
-    case 'salt'
-        containers_for_salt;
-    case 'theta'
-        containers_for_heat;
-    case 'ptr'
-        containers_for_ptr;
-    otherwise
-        error('myField option not recognised')
+if ~strcmp(makePlots,'none')
+  switch myField
+      case 'salt'
+          containers_for_salt;
+      case 'theta'
+          containers_for_heat;
+      case 'ptr'
+          containers_for_ptr;
+      otherwise
+          error('myField option not recognised')
+  end
 end
 
 
@@ -103,6 +105,10 @@ for nExp=1:length(myExpList)
 
     % select experiment from list    
     expdir = myExpList{nExp};
+    date_lag0 = myLagList{nExp};
+    disp('--')
+    disp(strcat('-- Lag 0 date set to: ',datestr(date_lag0)))
+    disp('--')
 
     % set locations based on experiment selection ---------------
     
@@ -208,6 +214,7 @@ for nExp=1:length(myExpList)
 
     % stdev location
     %sloc = strcat(rootdir,'stdevs_wseasons/');
+    sloc = [];
     if ~useSingleFsigValue
         sloc = strcat(rootdir,'stdevs_anoms/');
         if exist(sloc,'dir')
