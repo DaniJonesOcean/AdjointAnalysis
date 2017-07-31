@@ -59,6 +59,15 @@ set(ht,'FontSize',12)
 set(gca,'FontSize',12)
 
 % print
+if goMakeAnimations==1 && saveallplots==1
+    goprint = 1;
+elseif goMakeAnimations==0
+    goprint = 1;
+else
+    goprint = 0;
+end
+    
+if goprint == 1   
 if nzlev==0
   switch myPlotFormat
     case 'eps'
@@ -91,6 +100,7 @@ elseif nzlev>0
   end
 else
   warning('nzlev not set, plot not printed')
+end
 end
 
 % clear current figure window (attempt to stem memory leak)

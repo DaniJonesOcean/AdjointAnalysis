@@ -281,6 +281,8 @@ myProj = 1; %- Mercator only
 
 % eiether make animations (=1) or not (=0)
 goMakeAnimations = 0;
+% If making animations, also save each snapshot
+saveallplots = 0;
       
 % -- select points for boxes to be put on plots
 
