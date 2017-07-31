@@ -7,10 +7,14 @@ debugMode = 0;
 ad_iter = 12;
 
 % manually set maximum number of records
-maxrec = 28;
+maxrec = 523;
+%maxrec = 132;
 
 % theta, salt, or ptr?
 myField = 'theta';
+
+% spatial scaling method (1=scale 3D ADJ fields by dz, 0=no scaling)
+spatialScaling = 1.0;
 
 % set number of days between snapshots/outputs (adxx or ADJ)
 % CAUTION: assumes that the days between adxx and ADJ outputs are the same
@@ -18,14 +22,22 @@ daysBetweenOutputs = 14.0;
 %daysBetweenOutputs = 30.42;
 
 % short analysis (1=just a few selected records) or long (0=all records)
-doShortAnalysis = 1;
+doShortAnalysis = 0;
 
-% gencost multiplier (check data.ecco to see what was used)
-mult_gencost = 1.0e9;    % used for 2008 SO MXL heat content
-%mult_gencost = 1.0;
+% gencost scaling (adxx = adxx./scale_gencost)
+fc = 3.43e10; % mean cost function value (for scaling)
+scale_gencost = fc;    % used for 2008 SO MXL heat content
+%scale_gencost = 1.0;
 
 % use single value for Fsig (as opposed to a spatially-varying std. dev.
-useSingleFsigValue = 1;
+useSingleFsigValue = 0;
+
+% optional tag for file name to indicate sigma choice
+if useSingleFsigValue
+  nametag='_sig0D';
+else
+  nametag='_sig3D';
+end
 
 % map container for single sigma values
 keySet = {'THETA',...
@@ -34,6 +46,7 @@ keySet = {'THETA',...
           'EXFqnet',...
           'EXFtaue',...
           'EXFtaun',...
+          'SFLUX',...
           'NONE'};
 valueSet = {0.3,...
             0.07,...
@@ -41,6 +54,7 @@ valueSet = {0.3,...
             60.0,...
             0.08,...
             0.06,...
+            1.0e-3,... 
             1.0};
 FSigSingle = containers.Map(keySet,valueSet);
 
@@ -57,20 +71,21 @@ date0_num = datenum('1992-01-01 12:00:00');
 % date that is considered "lag zero"
 %date_lag0 = datenum('1994-10-01 12:00:00');
 %date_lag0 = datenum('2008-01-01 12:00:00');
-date_lag0 = datenum('1992-01-01 12:00:00');
+date_lag0 = datenum('2011-01-01 12:00:00');
+%date_lag0 = datenum('1992-01-01 12:00:00');
 
 % list of adjoint sensitivity variables to load and process
-myAdjList =   {'adxx_empmr',...
-              'adxx_qnet',...
-              'adxx_tauu',...
-              'adxx_tauv'};
-mySigmaList = {'EXFempmr',...
-              'EXFqnet',...
-              'EXFtaue',...
-              'EXFtaun'};
+myAdjList = {'ADJtheta'};
+mySigmaList = {'THETA'};
+%myAdjList = {'adxx_empmr',...
+%             'adxx_qnet',...
+%             'adxx_tauu',...
+%             'adxx_tauv'};  
+%mySigmaList = {'EXFempmr',...
+%               'EXFqnet',...
+%               'EXFtaue',...
+%               'EXFtaun'};
           
-    
-
 % ----------------------------------------
 %% --- set file locations -----------------
 % ----------------------------------------
@@ -81,14 +96,17 @@ disp('--')
 % set root directory and experiment directory
 
 % -- forward case (needed for mixed layer depth, sea ice)
-%rootdir = '/data/expose/ECCOv4_fwd/';
-%expdir = 'run.20yr.diags/';
-fwdroot = '/data/expose/orchestra/';
+fwdroot = '/data/expose/ECCOv4_fwd/';
 fwddir = 'run.20yr.diags/';
+%fwdroot = '/data/expose/labrador/';
+%fwddir = 'run.20yr.diags/';
 
 % -- Southern Ocean mixed layer heat content
-rootdir = '/data/oceans_output/open/emmomp/adjoint/';
+%rootdir = '/data/oceans_output/open/emmomp/adjoint/';
 %expdir = 'run_ad.20yr.SOmixlayer/';
+
+% -- expose
+rootdir = '/data/expose/expose_global/';
 
 % -- labrador sea
 %rootdir = '/data/expose/labrador/';
@@ -100,9 +118,49 @@ rootdir = '/data/oceans_output/open/emmomp/adjoint/';
 %expdir = 'run_ad.20yr.labDeep.heat/';
 %expdir = 'run_ad.20yr.labDeep.ptr/';
 
-% use this for multiple experiments (all same units)
-myExpList = {'run_ad.1yr.SOmixlayer/'};
+myExpList = {'run_ad.20yr.epac.subd.heat/'};
+myLagList = {datenum('2011-01-01 12:00:00')};
 
+% use this for multiple experiments (all same units)
+%myExpList = {'run_ad.5yr.1996.labUpper.heat/' ...
+%             'run_ad.5yr.1997.labUpper.heat/' ...
+%             'run_ad.5yr.1998.labUpper.heat/' ...
+%             'run_ad.5yr.1999.labUpper.heat/' ...
+%             'run_ad.5yr.2000.labUpper.heat/' ...
+%             'run_ad.5yr.2001.labUpper.heat/' ...
+%             'run_ad.5yr.2002.labUpper.heat/' ...
+%             'run_ad.5yr.2003.labUpper.heat/' ...
+%             'run_ad.5yr.2004.labUpper.heat/' ...
+%             'run_ad.5yr.2005.labUpper.heat/' ...
+%             'run_ad.5yr.2006.labUpper.heat/' ...
+%             'run_ad.5yr.2007.labUpper.heat/' ...
+%             'run_ad.5yr.2008.labUpper.heat/' ...
+%             'run_ad.5yr.2009.labUpper.heat/' ...
+%             'run_ad.5yr.2010.labUpper.heat/' ...
+%             'run_ad.5yr.2011.labUpper.heat/' ...
+%            };
+
+%myLagList = {datenum('1992-01-01 12:00:00') ...
+%             datenum('1993-01-01 12:00:00') ...
+%             datenum('1994-01-01 12:00:00') ...
+%             datenum('1995-01-01 12:00:00') ...
+%             datenum('1996-01-01 12:00:00') ...
+%             datenum('1997-01-01 12:00:00') ...
+%             datenum('1998-01-01 12:00:00') ...
+%             datenum('1999-01-01 12:00:00') ...
+%             datenum('2000-01-01 12:00:00') ...
+%             datenum('2001-01-01 12:00:00') ...
+%             datenum('2002-01-01 12:00:00') ...
+%             datenum('2003-01-01 12:00:00') ...
+%             datenum('2004-01-01 12:00:00') ...
+%             datenum('2005-01-01 12:00:00') ...
+%             datenum('2006-01-01 12:00:00') ...
+%             datenum('2007-01-01 12:00:00') ...
+%             datenum('2008-01-01 12:00:00') ...
+%             datenum('2009-01-01 12:00:00') ...
+%             datenum('2010-01-01 12:00:00') ...
+%             datenum('2011-01-01 12:00:00')};
+%
 % make sure directory names end with a '/' character
 % switch myField
 %     case 'salt'
@@ -131,17 +189,18 @@ myExpList = {'run_ad.1yr.SOmixlayer/'};
 %
 %makePlots = 'dJ';
 %makePlots = 'rawsens';
-makePlots = 'both';
-%makePlots = 'none';
+%makePlots = 'both';
+makePlots = 'none';
 
 % select mask to plot as contour
 % -- set as empty [] for no contour
 %myMaskToPlot = 'masks/lab_upper_maskC';
+%myMaskToPlot = 'masks/epac_subd_maskC';
 myMaskToPlot = [];
 
 % flag for testing/exploration mode or production mode
-myPlotMode = 'testing';
-%myPlotMode = 'production';
+%myPlotMode = 'testing';
+myPlotMode = 'production';
 
 switch myPlotMode
   case 'testing'
@@ -170,7 +229,10 @@ valueSet = {'dJ \theta [deg C]',...
             'dJ \tau_E [deg C]',...
             'dJ \tau_N [deg C]'...
             'dJ \phi [deg C]'};
-niceTitle = containers.Map(keySet,valueSet);
+
+if ~strcmp(makePlots,'none')
+  niceTitle = containers.Map(keySet,valueSet);
+end
 
 % map container for nice titles (raw sensitivity fields)
 keySet = {'THETA','SALT','QNET','EMPMR','TAUU','TAUV','PTRACER01'};
@@ -188,10 +250,13 @@ valueSet = {strcat('\d J / \d \theta [degC/degC]')...
 %            'dJ/(zonal wind stress) [degrees C/(N/m^2)]',...
 %            'dJ/(merid. wind stress) [degrees C/(N/m^2)]',...
 %            'dJ/d(tracer) [degrees C/tracer]'};
-niceTitleRaw = containers.Map(keySet,valueSet);
+
+if ~strcmp(makePlots,'none')
+  niceTitleRaw = containers.Map(keySet,valueSet);
+end
 
 % use fixed colorbar axes (specified below, flag=1), or not (=0, default)
-cax_fixed = 0;
+cax_fixed = 1;
 
 % set to either plot MLD contours (=1) or not (=0, default)
 plotMLD = 1;
@@ -232,6 +297,10 @@ goMakeAnimations = 0;
 %boxlons = [-55 -55 -49 -49 -55];
 %boxlats = [ 55  60  60  55  55];
 
+% -- EPac subducted region
+boxlons = [-85.5 -85.5 -80.5 -80.5 -85.5]+360;
+boxlats = [-40.0 -35.0 -35.0 -40.0 -40.0];
+
 % -- blank, when you don't want a box
-boxlons = [];
-boxlats = [];
+%boxlons = [];
+%boxlats = [];

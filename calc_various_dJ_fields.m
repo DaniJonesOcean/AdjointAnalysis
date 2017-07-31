@@ -29,6 +29,12 @@ switch ad_name(1:3)
     ff = dJfield;   % adxx fields do not require spatiotemporal scaling
   case 'ADJ'
     ff = dJfield.*ADJ_time_scaling;  % temporal scaling only
+    % spatial scaling (divide by dz)
+    if (spatialScaling)&&(ndim==3)
+      ff = ff./DRF3D;
+      ampWeightedTime_num_now = ndays(nrecord).*abs(ff); 
+      ampWeightedTime_den_now = abs(ff);
+    end
   otherwise
     warning('Unexpected sensitivity field name')
 end

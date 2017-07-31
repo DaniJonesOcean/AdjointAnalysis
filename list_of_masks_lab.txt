@@ -1,0 +1,7 @@
+masks/in_labrador
+masks/not_in_labrador
+masks/in_irminger
+masks/in_arctic
+masks/in_nordic_seas
+masks/in_northern_north_atlantic
+masks/in_southern_north_atlantic
