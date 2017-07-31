@@ -89,25 +89,9 @@ nmaps = 0;
 
 % perform either short (a few records) or long analysis (all records)
 if doShortAnalysis==1
-  switch ad_file_type
-    case 'adxx'  
-      % select specific records to load/plot
-      recordVector = myPlotRecs;
-    case 'ADJ'
-      recordVector = its_ad(myPlotRecs);
-    otherwise
-      error('ad_file_type not recognized')
-    end
+    recordVector = myPlotRecs;
 else
-  switch ad_file_type
-    case 'adxx'
-      % create vector for selecting/loading/plotting all records 
-      recordVector = linspace(1,maxrec,maxrec);
-    case 'ADJ'
-      recordVector = its_ad;
-    otherwise
-      error('ad_file_type not recnogized')
-    end
+    recordVector = linspace(1,maxrec,maxrec);
 end
 
 % dash
@@ -141,10 +125,10 @@ for nrecord=1:length(recordVector)
       progress = 100.*nrecord/length(recordVector);
 
       % number of days, date num
-      ndays(nrecord) = recordVector(nrecord)/24;  % convert hours into days
+      ndays(nrecord) = its_ad(recordVector(nrecord))/24;  % convert hours into days
 
       % load adjoint sensitivity field
-      adxx = rdmds2gcmfaces(strcat(floc,ad_name),recordVector(nrecord));
+      adxx = rdmds2gcmfaces(strcat(floc,ad_name),its_ad(recordVector(nrecord)));
 
       % scale by scale_gencost
       adxx = adxx./scale_gencost;

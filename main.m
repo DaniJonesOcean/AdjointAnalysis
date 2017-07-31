@@ -199,7 +199,7 @@ for nExp=1:length(myExpList)
 
     % animation location
     if goMakeAnimations==1
-      aloc = strcat(rootdir,'animations/',expdir);
+      aloc = strcat(sroot,'animations/',expdir);
       if exist(aloc,'dir')
         disp('--')
         disp(strcat('-- animation location: ',aloc))
@@ -213,10 +213,9 @@ for nExp=1:length(myExpList)
     end
 
     % stdev location
-    %sloc = strcat(rootdir,'stdevs_wseasons/');
-    sloc = [];
+    %sloc = strcat(rootdir,'stdevs_wseasons/');   
     if ~useSingleFsigValue
-        sloc = strcat(rootdir,'stdevs_anoms/');
+        sloc = strcat(fwdroot,'stdevs_anoms/');
         if exist(sloc,'dir')
             disp('--')
             disp(strcat('-- standard deviations location: ',sloc))

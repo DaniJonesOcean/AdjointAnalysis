@@ -101,6 +101,9 @@ fwddir = 'run.20yr.diags/';
 %fwdroot = '/data/expose/labrador/';
 %fwddir = 'run.20yr.diags/';
 
+% Std devs directory
+sroot = '/data/expose/orchestra/';
+
 % -- Southern Ocean mixed layer heat content
 %rootdir = '/data/oceans_output/open/emmomp/adjoint/';
 %expdir = 'run_ad.20yr.SOmixlayer/';
