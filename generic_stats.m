@@ -30,7 +30,7 @@ for nvariable=1:length(myAdjList)
   % if Fsig exists, set appropriate flags
   % Fsig is loaded in handle_adxx or handle_ADJ
   if useSingleFsigValue
-      doesSigmaExist=0
+      doesSigmaExist=1;
   else      
   sfilename = strcat(sloc,sigma_name,'.mat');
   if exist(sfilename,'file')
