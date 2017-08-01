@@ -18,8 +18,7 @@ if [[ $recnum =~ $re ]]; then
     for filename in ${FNAMES[@]}
     do
 	echo $filename
-	sed '/nrecords/s/1/'$recnum'/' $filename >tmp
-	mv tmp $filename
+	sed -i -e "/nrecords/s/\s1\s]/ $recnum ]/" $filename 
     done
 else
     echo 'nrecord not a number'
