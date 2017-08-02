@@ -199,13 +199,15 @@ for nrecord=1:length(recordVector)
 % dJglobal.xavg.raw(ncount) = dJraw_now;
 % dJglobal.xavg.mean(ncount) = dJmean_now;
 % dJglobal.xavg.var(ncount) = dJvar_now;
-
-  % amplitude weighted mean time
-  ampWeightedTime_numerator = ampWeightedTime_numerator + ampWeightedTime_num_now.*daysBetweenOutputs;
-  ampWeightedTime_denominator = ampWeightedTime_denominator + ampWeightedTime_den_now.*daysBetweenOutputs;
+  switch ad_file_type
+    case 'ADJ'
+        % amplitude weighted mean time
+        ampWeightedTime_numerator = ampWeightedTime_numerator + ampWeightedTime_num_now.*daysBetweenOutputs;
+        ampWeightedTime_denominator = ampWeightedTime_denominator + ampWeightedTime_den_now.*daysBetweenOutputs; 
+  end
 
   % if masks exist, apply them
-  if exist('masks','var') && length(masks)>0
+  if exist('masks','var') && ~isempty(masks)
     apply_masks;
   else
     dJregional = [];
@@ -219,8 +221,11 @@ cumulative_map_raw = cumulative_map_raw./nmaps;
 cumulative_map_var = cumulative_map_var./nmaps;
 cumulative_map_mean = abs(cumulative_map_raw);
 
-% amplitude weighted time
-amplitudeWeightedTime = ampWeightedTime_numerator./ampWeightedTime_denominator;
+switch ad_file_type
+    case 'ADJ'
+        % amplitude weighted time
+        amplitudeWeightedTime = ampWeightedTime_numerator./ampWeightedTime_denominator;
+end
 
 % date handling
 dates = datestr(date_num);
@@ -236,10 +241,19 @@ if doShortAnalysis==1
 else
   disp(d8)
   disp(strcat(d8,' savings results for:',ad_name));
+  switch ad_file_type
+    case 'ADJ'
   save(strcat(dloc,'genstats_',ad_name,nametag,'.mat'),'dJglobal','dJregional',...
                    'ad_name','sigma_name','masks','ndays','FSigSingle',...
                    'floc','ploc','dloc','sloc','gloc','nmaps','amplitudeWeightedTime',...
                    'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
                    'dates','date_num','month','lag_in_days','lag_in_years');
+    case 'adxx'
+  save(strcat(dloc,'genstats_',ad_name,nametag,'.mat'),'dJglobal','dJregional',...
+                   'ad_name','sigma_name','masks','ndays','FSigSingle',...
+                   'floc','ploc','dloc','sloc','gloc','nmaps',...
+                   'cumulative_map_raw','cumulative_map_var','cumulative_map_mean',...
+                   'dates','date_num','month','lag_in_days','lag_in_years'); 
+  end
   disp(d8)
 end

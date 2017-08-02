@@ -13,6 +13,12 @@ maxrec = 523;
 % theta, salt, or ptr?
 myField = 'theta';
 
+% specify caxis containers
+cont_for_theta = 'containers_for_heat_old.m';
+%cont_for_theta = 'containers_for_heat.m';
+cont_for_salt = 'contaners_for_salt.m';
+cont_for_ptr = 'containers_for_ptr.m';
+
 % spatial scaling method (1=scale 3D ADJ fields by dz, 0=no scaling)
 spatialScaling = 1.0;
 

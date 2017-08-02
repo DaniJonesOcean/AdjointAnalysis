@@ -38,7 +38,7 @@ a = 6.371e6;            % Radius of Earth (m)
 % load user inputs
 inputs
 
-if strcmp(makePlots,'none') && goMakeAnimations == 0
+if strcmp(makePlots,'none') && goMakeAnimations == 0 && doShortAnalysis == 1
     display 'WARNING no outputs will be created'
     yn = input('Type 1 to continue: ');
     if yn~=1
@@ -83,11 +83,11 @@ end
 if ~strcmp(makePlots,'none')
   switch myField
       case 'salt'
-          containers_for_salt;
+          run(cont_for_salt)
       case 'theta'
-          containers_for_heat;
+          run(cont_for_heat)
       case 'ptr'
-          containers_for_ptr;
+          run(cont_for_ptr)
       otherwise
           error('myField option not recognised')
   end
