@@ -26,5 +26,6 @@ end
 
 fid =fopen(['masks/' maskname '_maskT'],'w','b');
 fwrite(fid,tMask,'float32');
+fclose(fid);
 display(['Mask written to masks/' maskname '_maskT'])
 

@@ -32,12 +32,13 @@ switch ad_name(1:3)
     % spatial scaling (divide by dz)
     if (spatialScaling)&&(ndim==3)
       ff = ff./DRF3D;
-      ampWeightedTime_num_now = ndays(nrecord).*abs(ff); 
-      ampWeightedTime_den_now = abs(ff);
     end
   otherwise
     warning('Unexpected sensitivity field name')
 end
+
+ampWeightedTime_num_now = ndays(nrecord).*abs(ff); 
+ampWeightedTime_den_now = abs(ff);
 
 % raw (no absolute value, just taken as-is)                          
 dJraw_justSum_now = squeeze(nansum(ff(:)));
