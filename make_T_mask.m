@@ -14,7 +14,7 @@ tMask = zeros(nMonths+10,1); % Padding required beyond end of fwd run
 % Get dates of run
 dv = nan(nMonths,6);
 for t = 1:nMonths
-    dv(t,:) = datevec(addtodate(startdate,t,'month'));
+    dv(t,:) = datevec(addtodate(startdate,t-1,'month'));
 end
 
 % Create mask

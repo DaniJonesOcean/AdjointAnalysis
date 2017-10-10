@@ -199,7 +199,7 @@ for nExp=1:length(myExpList)
 
     % animation location
     if goMakeAnimations==1
-      aloc = strcat(sroot,'animations/',expdir);
+      aloc = strcat(rootdir,'animations/',expdir);
       if exist(aloc,'dir')
         disp('--')
         disp(strcat('-- animation location: ',aloc))

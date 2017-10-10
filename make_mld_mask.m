@@ -1,4 +1,4 @@
-function make_mld_mask(years,months,masktype,maskname,areamask)
+function maskfld=make_mld_mask(years,months,masktype,maskname,areamask)
 %makes 3D masks based on ECCO MLD depths. Specify time range and mean or
 %max and name for output file
 %years = {2007,2008} Years to MLD from
@@ -71,8 +71,8 @@ nanmean(mld_SO)
 %Load area mask
 if nargin > 4
     display('Area mask defined')
-    if exist(['masks/' areamask], 'file')
-        areafld = read_bin(['masks/' areamask]);
+    if exist(['~/data/orchestra/matlab/AdjointAnalysis/masks/' areamask], 'file')
+        areafld = read_bin(['~/data/orchestra/matlab/AdjointAnalysis/masks/' areamask]);
     else
         display('-- Area mask not found --')
     end
@@ -102,7 +102,7 @@ for iFace=1:mld_tmean.nFaces
         eval(['maskfld.f' iF '=mask;'])
 end
 
-write2file(['masks/' maskname '_maskC'],convert2gcmfaces(maskfld))
+write2file(['~/data/orchestra/matlab/AdjointAnalysis/masks/' maskname '_maskC'],convert2gcmfaces(maskfld))
 display(['Mask written to masks/' maskname '_maskC'])
-figure, m_map_gcmfaces(sum(maskfld,3),3)
+figure, m_map_gcmfaces(sum(maskfld,3),3.1)
 title([maskname ' level'])

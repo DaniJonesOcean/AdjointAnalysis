@@ -101,6 +101,8 @@ end
 % dash
 d8 = '-------- ';
 
+amplitudeWeightedTime_preintegral = nan;
+
 % load adjoint sensitivity fields, scale them
 for nrecord=1:length(recordVector)
 
