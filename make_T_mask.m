@@ -24,8 +24,9 @@ for y = 1:length(years)
     end   
 end
 
-fid =fopen(['masks/' maskname '_maskT'],'w','b');
+fid =fopen(['~/data/orchestra/matlab/AdjointAnalysis/masks/' maskname '_maskT'],'w','b');
 fwrite(fid,tMask,'float32');
 fclose(fid);
 display(['Mask written to masks/' maskname '_maskT'])
-
+figure, plot(1:nMonths+10,tMask)
+title(maskname)
